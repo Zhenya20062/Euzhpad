@@ -1,4 +1,4 @@
-package com.euzhene.euzhpad.presentation
+package com.euzhene.euzhpad.presentation.note_list
 
 import androidx.recyclerview.widget.DiffUtil
 import com.euzhene.euzhpad.domain.entity.NoteItem

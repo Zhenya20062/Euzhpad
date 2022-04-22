@@ -17,4 +17,7 @@ interface NoteListDao {
 
     @Query("delete from note_items where id = :noteItemId")
     suspend fun deleteNoteItem(noteItemId: Int)
+
+    @Query("select * from note_items where id = :noteItemId limit 1")
+    suspend fun getNoteItemById(noteItemId: Int):NoteItemDbModel
 }

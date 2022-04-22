@@ -20,6 +20,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/title"
             android:text="@{noteItem.title}"
+            android:inputType="textLongMessage"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             app:layout_constraintStart_toStartOf="parent"

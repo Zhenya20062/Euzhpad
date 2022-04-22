@@ -1,10 +1,8 @@
-package com.euzhene.euzhpad.presentation
+package com.euzhene.euzhpad.presentation.note_list
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
-import com.euzhene.euzhpad.R
-import com.euzhene.euzhpad.databinding.FragmentNoteListBinding
 import com.euzhene.euzhpad.databinding.PartialNoteItemBinding
 import com.euzhene.euzhpad.domain.entity.NoteItem
 

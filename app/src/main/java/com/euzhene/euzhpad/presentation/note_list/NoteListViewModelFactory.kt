@@ -1,4 +1,4 @@
-package com.euzhene.euzhpad.presentation
+package com.euzhene.euzhpad.presentation.note_list
 
 import android.app.Application
 import androidx.lifecycle.ViewModel

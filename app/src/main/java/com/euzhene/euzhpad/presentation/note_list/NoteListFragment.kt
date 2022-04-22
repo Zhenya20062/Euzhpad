@@ -1,4 +1,4 @@
-package com.euzhene.euzhpad.presentation
+package com.euzhene.euzhpad.presentation.note_list
 
 import android.content.DialogInterface
 import android.os.Bundle
@@ -6,14 +6,14 @@ import android.view.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE
 import androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN
 import androidx.lifecycle.ViewModelProvider
 import com.euzhene.euzhpad.R
 import com.euzhene.euzhpad.databinding.FragmentNoteListBinding
 import com.euzhene.euzhpad.di.AppComponent
-import com.euzhene.euzhpad.di.DaggerAppComponent
+import com.euzhene.euzhpad.di.ExampleApp
 import com.euzhene.euzhpad.domain.entity.NoteItem
+import com.euzhene.euzhpad.presentation.edit_note.EditItemFragment
 import javax.inject.Inject
 
 class NoteListFragment : Fragment() {
@@ -22,7 +22,7 @@ class NoteListFragment : Fragment() {
         get() = _binding ?: throw RuntimeException("FragmentNoteListBinding = null")
 
     private val component: AppComponent by lazy {
-        DaggerAppComponent.factory().create(requireActivity().application)
+        (requireActivity().application as ExampleApp).component
     }
 
     @Inject

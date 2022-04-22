@@ -6,10 +6,6 @@ import com.euzhene.euzhpad.data.database.NoteListDao
 import com.euzhene.euzhpad.data.mapper.NoteListMapper
 import com.euzhene.euzhpad.domain.entity.NoteItem
 import com.euzhene.euzhpad.domain.repository.NoteListRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class NoteListRepositoryImpl @Inject constructor(
@@ -37,6 +33,11 @@ class NoteListRepositoryImpl @Inject constructor(
     override suspend fun editNoteItem(noteItem: NoteItem) {
         val noteItemDbModel = noteListMapper.mapEntityToDbModel(noteItem)
         noteListDao.addNoteItem(noteItemDbModel)
+    }
+
+    override suspend fun getNoteItem(noteItemId: Int): NoteItem {
+        val noteItemDbModel= noteListDao.getNoteItemById(noteItemId)
+        return noteListMapper.mapDbModelToEntity(noteItemDbModel)
     }
 
 }

@@ -10,7 +10,7 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/main_container"
-            android:name="com.euzhene.euzhpad.presentation.NoteListFragment"
+            android:name="com.euzhene.euzhpad.presentation.note_list.NoteListFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 

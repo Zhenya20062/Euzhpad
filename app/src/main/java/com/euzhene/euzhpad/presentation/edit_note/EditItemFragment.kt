@@ -1,14 +1,18 @@
-package com.euzhene.euzhpad.presentation
+package com.euzhene.euzhpad.presentation.edit_note
 
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.euzhene.euzhpad.R
 import com.euzhene.euzhpad.databinding.FragmentNoteEditBinding
+import com.euzhene.euzhpad.di.AppComponent
+import com.euzhene.euzhpad.di.ExampleApp
 import com.euzhene.euzhpad.domain.entity.NoteItem
 import java.lang.RuntimeException
+import javax.inject.Inject
 
 class EditItemFragment : Fragment() {
     private var _binding: FragmentNoteEditBinding? = null
@@ -16,10 +20,19 @@ class EditItemFragment : Fragment() {
         get() = _binding ?: throw RuntimeException("FragmentNoteEditBinding = null")
 
     private lateinit var noteItem: NoteItem
+    private val component:AppComponent by lazy {
+        (requireActivity().application as ExampleApp).component
+    }
+
+    @Inject
+    lateinit var viewModelFactory: EditItemViewModelFactory
+    private val viewModel by lazy {
+        ViewModelProvider(this, viewModelFactory)[EditItemViewModel::class.java]
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        component.inject(this)
         parseArguments()
     }
 
@@ -35,9 +48,18 @@ class EditItemFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (requireActivity() as AppCompatActivity).setSupportActionBar(binding.editNoteToolbar
-                as Toolbar)
+        (requireActivity() as AppCompatActivity).setSupportActionBar(
+            binding.editNoteToolbar
+                    as Toolbar
+        )
         binding.noteItem = noteItem
+        viewModel.getNoteItem(noteItem.id)
+        observeViewModel()
+    }
+    private fun observeViewModel() {
+        viewModel.shouldCloseScreen.observe(viewLifecycleOwner) {
+            requireActivity().onBackPressed()
+        }
     }
 
     private fun parseArguments() {
@@ -53,7 +75,21 @@ class EditItemFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         requireActivity().menuInflater.inflate(R.menu.edit_note_menu, menu)
+    }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.title) {
+            getString(R.string.save) -> save()
+            getString(R.string.share) -> {}//todo
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun save() {
+        viewModel.editNoteItem(
+            binding.etTitle.text.toString(),
+            binding.etContent.text.toString()
+        )
     }
 
     override fun onDestroyView() {
