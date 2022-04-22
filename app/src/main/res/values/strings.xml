@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Euzhpad</string>
+    <string name="preferences">Preferences</string>
+    <string name="new_note">new note</string>
+    <string name="filter">filter</string>
+    <string name="donate">Donate</string>
+    <string name="about">About</string>
+    <string name="settings_edit">Edit</string>
+    <string name="settings_delete">Delete</string>
+    <string name="settings_share">Share</string>
+    <string name="settings_export">Export</string>
+    <string name="settings_lock">Lock with password</string>
+    <string-array name="alert_dialog_menu">
+        <item>Edit</item>
+        <item>Delete</item>
+        <item>Share</item>
+        <item>Export</item>
+        <item>Lock with password</item>
+    </string-array>
+</resources>

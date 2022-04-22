@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".presentation.NoteListFragment">
+    <item
+        android:id="@+id/action_new_note"
+        android:icon="@drawable/pen"
+        android:title="@string/new_note"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_filter"
+        android:icon="@drawable/filter"
+        android:title="@string/filter"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_preferences"
+        android:title="@string/preferences" />
+    <item
+        android:id="@+id/action_donate"
+        android:title="@string/donate" />
+    <item
+        android:id="@+id/action_about"
+        android:title="@string/about" />
+</menu>
