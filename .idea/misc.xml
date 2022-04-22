@@ -4,11 +4,14 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/Euzhene/Desktop/Programming/AndroidProjects/Euzhpad/app/src/main/res/layout/activity_main.xml" value="0.33" />
+        <entry key="..\:/Users/Euzhene/Desktop/Programming/AndroidProjects/Euzhpad/app/src/main/res/layout/edit_note_toolbar.xml" value="0.31765711842667804" />
+        <entry key="..\:/Users/Euzhene/Desktop/Programming/AndroidProjects/Euzhpad/app/src/main/res/layout/fragment_note_edit.xml" value="0.33" />
         <entry key="..\:/Users/Euzhene/Desktop/Programming/AndroidProjects/Euzhpad/app/src/main/res/layout/fragment_note_list.xml" value="0.4537037037037037" />
         <entry key="..\:/Users/Euzhene/Desktop/Programming/AndroidProjects/Euzhpad/app/src/main/res/layout/menu_alert_dialog.xml" value="0.5" />
         <entry key="..\:/Users/Euzhene/Desktop/Programming/AndroidProjects/Euzhpad/app/src/main/res/layout/menu_note_list.xml" value="0.14550509731232622" />
         <entry key="..\:/Users/Euzhene/Desktop/Programming/AndroidProjects/Euzhpad/app/src/main/res/layout/partial_note_item.xml" value="0.35778985507246375" />
         <entry key="..\:/Users/Euzhene/Desktop/Programming/AndroidProjects/Euzhpad/app/src/main/res/layout/toolbar.xml" value="0.33" />
+        <entry key="..\:/Users/Euzhene/Desktop/Programming/AndroidProjects/Euzhpad/app/src/main/res/menu/edit_note_menu.xml" value="0.31765711842667804" />
         <entry key="..\:/Users/Euzhene/Desktop/Programming/AndroidProjects/Euzhpad/app/src/main/res/menu/note_list_context_menu.xml" value="0.2706209453197405" />
         <entry key="..\:/Users/Euzhene/Desktop/Programming/AndroidProjects/Euzhpad/app/src/main/res/menu/note_list_menu.xml" value="0.33" />
       </map>

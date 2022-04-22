@@ -10,6 +10,11 @@
     <string name="settings_share">Share</string>
     <string name="settings_export">Export</string>
     <string name="settings_lock">Lock with password</string>
+    <string name="title">Title</string>
+    <string name="note">Note</string>
+    <string name="edit_note_toolbar">Edit Note</string>
+    <string name="share">share</string>
+    <string name="save">Save</string>
     <string-array name="alert_dialog_menu">
         <item>Edit</item>
         <item>Delete</item>

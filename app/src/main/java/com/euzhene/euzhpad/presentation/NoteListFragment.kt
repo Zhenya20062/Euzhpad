@@ -6,6 +6,8 @@ import android.view.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE
+import androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN
 import androidx.lifecycle.ViewModelProvider
 import com.euzhene.euzhpad.R
 import com.euzhene.euzhpad.databinding.FragmentNoteListBinding
@@ -55,7 +57,7 @@ class NoteListFragment : Fragment() {
     private fun setupRecyclerView() {
         binding.rvNoteList.adapter = noteListAdapter
         noteListAdapter.onItemClick = {
-            //todo(pass the value)
+            openEditMode(it)
         }
         noteListAdapter.onItemLongClick = {
             createAlertDialog(it).show()
@@ -67,7 +69,7 @@ class NoteListFragment : Fragment() {
             .setItems(R.array.alert_dialog_menu) { _: DialogInterface, i: Int ->
                 when (resources.getStringArray(R.array.alert_dialog_menu)[i]) {
                     getString(R.string.settings_edit) -> {
-                        //todo
+                        openEditMode(noteItem)
                     }
                     getString(R.string.settings_delete) -> {
                         viewModel.deleteNoteItem(noteItem)
@@ -87,10 +89,21 @@ class NoteListFragment : Fragment() {
             .setCancelable(true)
             .create()
     }
+    private fun openEditMode(noteItem:NoteItem) {
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.main_container, EditItemFragment.newInstance(noteItem))
+            .addToBackStack(null)
+            .setTransition(TRANSIT_FRAGMENT_OPEN)
+            .commit()
+    }
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         requireActivity().menuInflater.inflate(R.menu.note_list_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onDestroyView() {
