@@ -1,6 +1,7 @@
 package com.euzhene.euzhpad.presentation.note_list
 
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AlertDialog
@@ -74,9 +75,7 @@ class NoteListFragment : Fragment() {
                     getString(R.string.settings_delete) -> {
                         viewModel.deleteNoteItem(noteItem)
                     }
-                    getString(R.string.settings_share) -> {
-                        //todo
-                    }
+                    getString(R.string.settings_share) -> share(noteItem)
                     getString(R.string.settings_export) -> {
                         //todo
                     }
@@ -89,13 +88,27 @@ class NoteListFragment : Fragment() {
             .setCancelable(true)
             .create()
     }
-    private fun openEditMode(noteItem:NoteItem) {
+
+    private fun share(noteItem: NoteItem) {
+        val shareIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(
+                Intent.EXTRA_TEXT,
+                viewModel.concatenateTitleAndContent(noteItem.title, noteItem.content)
+            )
+            type = TEXT_PLAIN_TYPE
+        }
+        startActivity(shareIntent)
+    }
+
+    private fun openEditMode(noteItem: NoteItem) {
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.main_container, NoteItemFragment.newInstanceEditNote(noteItem.id))
             .addToBackStack(null)
             .setTransition(TRANSIT_FRAGMENT_OPEN)
             .commit()
     }
+
     private fun openNewNoteMode() {
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.main_container, NoteItemFragment.newInstanceAddNote())
@@ -110,7 +123,7 @@ class NoteListFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.title) {
+        when (item.title) {
             getString(R.string.new_note) -> openNewNoteMode()
             getString(R.string.filter) -> {
                 //todo
@@ -134,6 +147,10 @@ class NoteListFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        private const val TEXT_PLAIN_TYPE = "text/plain"
     }
 
 }

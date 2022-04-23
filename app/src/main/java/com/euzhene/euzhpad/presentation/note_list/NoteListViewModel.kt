@@ -21,4 +21,9 @@ class NoteListViewModel(
             deleteNoteItemUseCase(noteItem)
         }
     }
+
+    fun concatenateTitleAndContent(title: String, content: String): String {
+        val space = "\n\n"
+        return title + space + content
+    }
 }

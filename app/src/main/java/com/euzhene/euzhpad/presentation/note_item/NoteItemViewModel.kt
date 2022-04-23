@@ -19,6 +19,7 @@ class NoteItemViewModel(
     private val _noteItem = MutableLiveData<NoteItem>()
     val noteItem: LiveData<NoteItem>
         get() = _noteItem
+
     private val _shouldCloseScreen = MutableLiveData<Unit>()
     val shouldCloseScreen: LiveData<Unit>
         get() = _shouldCloseScreen
