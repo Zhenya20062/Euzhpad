@@ -8,5 +8,5 @@ interface NoteListRepository {
     suspend fun deleteNoteItem(noteItem: NoteItem)
     suspend fun addNoteItem(noteItem: NoteItem)
     suspend fun editNoteItem(noteItem: NoteItem)
-    suspend fun getNoteItem(noteIteId: Int): NoteItem
+    suspend fun getNoteItem(noteItemId: Int): NoteItem
 }

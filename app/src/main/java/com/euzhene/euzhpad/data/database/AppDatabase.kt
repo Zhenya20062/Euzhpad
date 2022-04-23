@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import javax.inject.Inject
 
-@Database(entities = [NoteItemDbModel::class], version = 1, exportSchema = false)
+@Database(entities = [NoteItemDbModel::class], version = 3, exportSchema = false)
 abstract class AppDatabase: RoomDatabase() {
     abstract fun noteListDao(): NoteListDao
 
@@ -27,7 +27,8 @@ abstract class AppDatabase: RoomDatabase() {
                     application,
                     AppDatabase::class.java,
                     DB_NAME
-                ).build()
+                ).fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = db
                 return db
             }

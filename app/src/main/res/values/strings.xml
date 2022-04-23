@@ -10,16 +10,29 @@
     <string name="settings_share">Share</string>
     <string name="settings_export">Export</string>
     <string name="settings_lock">Lock with password</string>
+    <string name="settings_unlock">Unlock by password</string>
     <string name="title">Title</string>
     <string name="note">Note</string>
     <string name="edit_note_toolbar">Edit Note</string>
     <string name="share">share</string>
     <string name="save">Save</string>
-    <string-array name="alert_dialog_menu">
+    <string name="lock">Lock</string>
+    <string name="unlock">Unlock</string>
+    <string name ="incorrect_password">Incorrect password</string>
+
+    <string-array name="alert_dialog_menu_lock">
         <item>Edit</item>
         <item>Delete</item>
         <item>Share</item>
         <item>Export</item>
         <item>Lock with password</item>
+    </string-array>
+
+    <string-array name="alert_dialog_menu_unlock">
+        <item>Edit</item>
+        <item>Delete</item>
+        <item>Share</item>
+        <item>Export</item>
+        <item>UnLock by password</item>
     </string-array>
 </resources>

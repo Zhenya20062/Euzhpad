@@ -4,6 +4,8 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import android.widget.Button
+import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -58,35 +60,78 @@ class NoteListFragment : Fragment() {
     private fun setupRecyclerView() {
         binding.rvNoteList.adapter = noteListAdapter
         noteListAdapter.onItemClick = {
-            openEditMode(it)
+            passPassword(it)
         }
         noteListAdapter.onItemLongClick = {
-            createAlertDialog(it).show()
+            createOptionsAlertDialog(it).show()
         }
     }
 
-    private fun createAlertDialog(noteItem: NoteItem): AlertDialog {
-        return AlertDialog.Builder(requireContext())
-            .setItems(R.array.alert_dialog_menu) { _: DialogInterface, i: Int ->
-                when (resources.getStringArray(R.array.alert_dialog_menu)[i]) {
-                    getString(R.string.settings_edit) -> {
-                        openEditMode(noteItem)
-                    }
-                    getString(R.string.settings_delete) -> {
-                        viewModel.deleteNoteItem(noteItem)
-                    }
-                    getString(R.string.settings_share) -> share(noteItem)
-                    getString(R.string.settings_export) -> {
-                        //todo
-                    }
-                    getString(R.string.settings_lock) -> {
-                        //todo
-                    }
+    private fun createOptionsAlertDialog(noteItem: NoteItem): AlertDialog {
+        val options = if (noteItem.password.isNullOrEmpty()) {
+            R.array.alert_dialog_menu_lock
+        } else {
+            R.array.alert_dialog_menu_unlock
+        }
 
-                }
-            }
+        return AlertDialog.Builder(requireContext())
+            .setItems(options, createDialogListener(noteItem))
             .setCancelable(true)
             .create()
+    }
+
+    private fun createDialogListener(noteItem: NoteItem): DialogInterface.OnClickListener {
+
+        return DialogInterface.OnClickListener { _, which ->
+            when (resources.getStringArray(R.array.alert_dialog_menu_lock)[which]) {
+                getString(R.string.settings_edit) -> passPassword(noteItem)
+                getString(R.string.settings_delete) -> viewModel.deleteNoteItem(noteItem)
+                getString(R.string.settings_share) -> share(noteItem)
+                getString(R.string.settings_export) -> {
+                    //todo
+                }
+                getString(R.string.settings_lock) -> {
+                    changePassword(noteItem)
+                }
+                getString(R.string.settings_unlock) -> {
+                    //todo
+                }
+            }
+        }
+    }
+
+    private fun createPasswordAlertDialog(password: Boolean): AlertDialog {
+        val v: Int = if (password) {
+            R.layout.alert_dialog_lock_with_password
+        } else {
+            R.layout.alert_dialog_unlock_by_password
+
+        }
+        return AlertDialog.Builder(requireContext())
+            .setView(v)
+            .setCancelable(true)
+            .create()
+    }
+
+    private fun changePassword(noteItem: NoteItem) {
+        val alertDialog = createPasswordAlertDialog(noteItem.password.isNullOrEmpty())
+            .apply { show() }
+
+        val et = alertDialog.findViewById<EditText>(R.id.et_password)
+        val btn = alertDialog.findViewById<Button>(R.id.btn_lock)
+            ?: alertDialog.findViewById<Button>(R.id.btn_unlock)
+
+        btn?.setOnClickListener {
+            val password = et?.text.toString()
+            if (noteItem.password.isNullOrEmpty()) {
+                viewModel.editNoteItem(noteItem, password)
+            } else {
+                if (noteItem.password == password) {
+                    viewModel.editNoteItem(noteItem, null)
+                }
+            }
+            alertDialog.dismiss()
+        }
     }
 
     private fun share(noteItem: NoteItem) {
@@ -107,6 +152,33 @@ class NoteListFragment : Fragment() {
             .addToBackStack(null)
             .setTransition(TRANSIT_FRAGMENT_OPEN)
             .commit()
+
+    }
+
+    private fun passPassword(noteItem: NoteItem) {
+        if (noteItem.password.isNullOrEmpty()) {
+            openEditMode(noteItem)
+        } else {
+            val alertDialog = createPasswordAlertDialog(noteItem.password.isNullOrEmpty())
+                .apply { show() }
+
+            val et = alertDialog.findViewById<EditText>(R.id.et_password)
+            val btn = alertDialog.findViewById<Button>(R.id.btn_lock)
+                ?: alertDialog.findViewById<Button>(R.id.btn_unlock)
+
+            btn?.setOnClickListener {
+                val password = et?.text.toString()
+
+                if (noteItem.password == password) {
+                    openEditMode(noteItem)
+
+                    alertDialog.dismiss()
+                } else {
+                    et?.error = getString(R.string.incorrect_password)
+                }
+            }
+        }
+
     }
 
     private fun openNewNoteMode() {

@@ -8,6 +8,7 @@ import com.euzhene.euzhpad.domain.usecase.GetNoteItemUseCase
 import java.lang.RuntimeException
 import javax.inject.Inject
 
+@Suppress("UNCHECKED_CAST")
 class NoteItemViewModelFactory @Inject constructor(
     private val addNoteItemUseCase: AddNoteItemUseCase,
     private val editNoteItemUseCase: EditNoteItemUseCase,
@@ -16,7 +17,12 @@ class NoteItemViewModelFactory @Inject constructor(
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass == NoteItemViewModel::class.java) {
-           return  NoteItemViewModel(addNoteItemUseCase, editNoteItemUseCase, getNoteItemUseCase, noteDate) as T
+           return  NoteItemViewModel(
+               addNoteItemUseCase,
+               editNoteItemUseCase,
+               getNoteItemUseCase,
+               noteDate
+           ) as T
         }
         throw RuntimeException("Unknown view model $modelClass")
     }

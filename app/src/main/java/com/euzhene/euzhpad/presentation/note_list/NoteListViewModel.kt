@@ -6,15 +6,24 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.euzhene.euzhpad.domain.entity.NoteItem
 import com.euzhene.euzhpad.domain.usecase.DeleteNoteItemUseCase
+import com.euzhene.euzhpad.domain.usecase.EditNoteItemUseCase
 import com.euzhene.euzhpad.domain.usecase.GetNoteListUseCase
 import kotlinx.coroutines.launch
 
 class NoteListViewModel(
     application: Application,
+    private val editNoteItemUseCase: EditNoteItemUseCase,
     private val deleteNoteItemUseCase: DeleteNoteItemUseCase,
     getNoteListUseCase: GetNoteListUseCase
 ) : AndroidViewModel(application) {
     var noteList: LiveData<List<NoteItem>> = getNoteListUseCase()
+
+    fun editNoteItem(noteItem: NoteItem, password:String?) {
+        val item = noteItem.copy(password = password)
+        viewModelScope.launch {
+            editNoteItemUseCase(item)
+        }
+    }
 
     fun deleteNoteItem(noteItem: NoteItem) {
         viewModelScope.launch {

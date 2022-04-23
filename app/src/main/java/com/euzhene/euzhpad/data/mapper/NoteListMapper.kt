@@ -10,7 +10,8 @@ class NoteListMapper @Inject constructor() {
             noteItemDbModel.id,
             noteItemDbModel.title,
             noteItemDbModel.content,
-            noteItemDbModel.lastEditTime
+            noteItemDbModel.lastEditTime,
+            noteItemDbModel.password
         )
 
     fun mapDbModelListToEntity(noteItemDbList: List<NoteItemDbModel>): List<NoteItem> =
@@ -21,6 +22,7 @@ class NoteListMapper @Inject constructor() {
             noteItem.id,
             noteItem.title,
             noteItem.content,
-            noteItem.lastEditTime
+            noteItem.lastEditTime,
+            noteItem.password
         )
 }
