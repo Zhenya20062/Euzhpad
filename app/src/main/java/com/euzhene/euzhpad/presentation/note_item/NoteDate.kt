@@ -1,4 +1,4 @@
-package com.euzhene.euzhpad.presentation.edit_note
+package com.euzhene.euzhpad.presentation.note_item
 
 import android.icu.text.SimpleDateFormat
 import java.util.*

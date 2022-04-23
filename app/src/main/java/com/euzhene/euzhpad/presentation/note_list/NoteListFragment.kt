@@ -13,7 +13,7 @@ import com.euzhene.euzhpad.databinding.FragmentNoteListBinding
 import com.euzhene.euzhpad.di.AppComponent
 import com.euzhene.euzhpad.di.ExampleApp
 import com.euzhene.euzhpad.domain.entity.NoteItem
-import com.euzhene.euzhpad.presentation.edit_note.EditItemFragment
+import com.euzhene.euzhpad.presentation.note_item.NoteItemFragment
 import javax.inject.Inject
 
 class NoteListFragment : Fragment() {
@@ -91,7 +91,14 @@ class NoteListFragment : Fragment() {
     }
     private fun openEditMode(noteItem:NoteItem) {
         requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.main_container, EditItemFragment.newInstance(noteItem))
+            .replace(R.id.main_container, NoteItemFragment.newInstanceEditNote(noteItem.id))
+            .addToBackStack(null)
+            .setTransition(TRANSIT_FRAGMENT_OPEN)
+            .commit()
+    }
+    private fun openNewNoteMode() {
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.main_container, NoteItemFragment.newInstanceAddNote())
             .addToBackStack(null)
             .setTransition(TRANSIT_FRAGMENT_OPEN)
             .commit()
@@ -103,6 +110,24 @@ class NoteListFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.title) {
+            getString(R.string.new_note) -> openNewNoteMode()
+            getString(R.string.filter) -> {
+                //todo
+            }
+            getString(R.string.preferences) -> {
+                //todo
+
+            }
+            getString(R.string.donate) -> {
+                //todo
+
+            }
+            getString(R.string.about) -> {
+                //todo
+
+            }
+        }
         return super.onOptionsItemSelected(item)
     }
 
