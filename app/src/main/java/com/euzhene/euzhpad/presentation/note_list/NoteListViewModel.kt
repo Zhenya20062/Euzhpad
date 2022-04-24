@@ -4,9 +4,11 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
+import com.euzhene.euzhpad.domain.entity.Filter
 import com.euzhene.euzhpad.domain.entity.NoteItem
 import com.euzhene.euzhpad.domain.usecase.DeleteNoteItemUseCase
 import com.euzhene.euzhpad.domain.usecase.EditNoteItemUseCase
+import com.euzhene.euzhpad.domain.usecase.GetDefaultFilterUseCase
 import com.euzhene.euzhpad.domain.usecase.GetNoteListUseCase
 import kotlinx.coroutines.launch
 
@@ -14,9 +16,10 @@ class NoteListViewModel(
     application: Application,
     private val editNoteItemUseCase: EditNoteItemUseCase,
     private val deleteNoteItemUseCase: DeleteNoteItemUseCase,
-    getNoteListUseCase: GetNoteListUseCase
+    private val getNoteListUseCase: GetNoteListUseCase,
+    private val getDefaultFilterUseCase: GetDefaultFilterUseCase,
 ) : AndroidViewModel(application) {
-    var noteList: LiveData<List<NoteItem>> = getNoteListUseCase()
+    var noteList: LiveData<List<NoteItem>> = getNoteListUseCase(Filter.BY_DEFAULT)
 
     fun editNoteItem(noteItem: NoteItem, password:String?) {
         val item = noteItem.copy(password = password)
@@ -35,4 +38,13 @@ class NoteListViewModel(
         val space = "\n\n"
         return title + space + content
     }
+
+    fun getNoteListByFilter(filter: Filter) {
+        getNoteListUseCase(filter)
+    }
+    fun getDefaultFilter():Filter {
+        return getDefaultFilterUseCase()
+    }
+
+
 }

@@ -5,12 +5,19 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.euzhene.euzhpad.domain.entity.Filter
 import kotlinx.coroutines.flow.StateFlow
 
 @Dao
 interface NoteListDao {
-    @Query("select * from note_items")
-    fun getNoteList(): LiveData<List<NoteItemDbModel>>
+    @Query("select * from note_items order by title asc")
+    fun getNoteListByTitle(): LiveData<List<NoteItemDbModel>>
+
+    @Query("select * from note_items order by createDate desc")
+    fun getNoteListByCreateDate(): LiveData<List<NoteItemDbModel>>
+
+    @Query("select * from note_items order by lastEditTime desc")
+    fun getNoteListByLastEditTime(): LiveData<List<NoteItemDbModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addNoteItem(noteItemDbModel: NoteItemDbModel)
@@ -19,5 +26,5 @@ interface NoteListDao {
     suspend fun deleteNoteItem(noteItemId: Int)
 
     @Query("select * from note_items where id = :noteItemId limit 1")
-    suspend fun getNoteItemById(noteItemId: Int):NoteItemDbModel
+    suspend fun getNoteItemById(noteItemId: Int): NoteItemDbModel
 }

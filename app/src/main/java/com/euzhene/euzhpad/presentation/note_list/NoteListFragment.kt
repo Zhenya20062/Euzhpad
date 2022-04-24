@@ -6,8 +6,11 @@ import android.os.Bundle
 import android.view.*
 import android.widget.Button
 import android.widget.EditText
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN
 import androidx.lifecycle.ViewModelProvider
@@ -15,6 +18,7 @@ import com.euzhene.euzhpad.R
 import com.euzhene.euzhpad.databinding.FragmentNoteListBinding
 import com.euzhene.euzhpad.di.AppComponent
 import com.euzhene.euzhpad.di.ExampleApp
+import com.euzhene.euzhpad.domain.entity.Filter
 import com.euzhene.euzhpad.domain.entity.NoteItem
 import com.euzhene.euzhpad.presentation.note_item.NoteItemFragment
 import javax.inject.Inject
@@ -90,12 +94,7 @@ class NoteListFragment : Fragment() {
                 getString(R.string.settings_export) -> {
                     //todo
                 }
-                getString(R.string.settings_lock) -> {
-                    changePassword(noteItem)
-                }
-                getString(R.string.settings_unlock) -> {
-                    //todo
-                }
+                getString(R.string.settings_lock) -> changePassword(noteItem)
             }
         }
     }
@@ -105,7 +104,6 @@ class NoteListFragment : Fragment() {
             R.layout.alert_dialog_lock_with_password
         } else {
             R.layout.alert_dialog_unlock_by_password
-
         }
         return AlertDialog.Builder(requireContext())
             .setView(v)
@@ -162,23 +160,24 @@ class NoteListFragment : Fragment() {
             val alertDialog = createPasswordAlertDialog(noteItem.password.isNullOrEmpty())
                 .apply { show() }
 
-            val et = alertDialog.findViewById<EditText>(R.id.et_password)
-            val btn = alertDialog.findViewById<Button>(R.id.btn_lock)
-                ?: alertDialog.findViewById<Button>(R.id.btn_unlock)
+            val et: EditText = alertDialog.findViewById(R.id.et_password)
+                ?: throw java.lang.RuntimeException("Couldn't find the right edit text")
+            val btn: Button = alertDialog.findViewById(R.id.btn_lock)
+                ?: alertDialog.findViewById(R.id.btn_unlock)
+                ?: throw java.lang.RuntimeException("Couldn't find the right button")
 
-            btn?.setOnClickListener {
-                val password = et?.text.toString()
+            btn.setOnClickListener {
+                val password = et.text.toString()
 
                 if (noteItem.password == password) {
                     openEditMode(noteItem)
 
                     alertDialog.dismiss()
                 } else {
-                    et?.error = getString(R.string.incorrect_password)
+                    et.error = getString(R.string.incorrect_password)
                 }
             }
         }
-
     }
 
     private fun openNewNoteMode() {
@@ -197,9 +196,7 @@ class NoteListFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.title) {
             getString(R.string.new_note) -> openNewNoteMode()
-            getString(R.string.filter) -> {
-                //todo
-            }
+            getString(R.string.filter) -> sort()
             getString(R.string.preferences) -> {
                 //todo
 
@@ -214,6 +211,41 @@ class NoteListFragment : Fragment() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun sort() {
+        val alertDialog = createSortingAlertDialog().apply { show() }
+
+        val radioGroup: RadioGroup = alertDialog.findViewById(R.id.radio_group_sorting)
+            ?: throw RuntimeException("Couldn't find the right radioGroup")
+        val radioBtnId = when(viewModel.getDefaultFilter()) {
+            Filter.BY_TITLE -> R.id.rb_title
+            Filter.BY_CHANGE_DATE -> R.id.rb_change_date
+            Filter.BY_CREATE_DATE -> R.id.rb_create_date
+            else -> throw RuntimeException("Impossible input")
+        }
+        radioGroup.check(radioBtnId)
+        radioGroup.setOnCheckedChangeListener { _, checkedId ->
+            val radioButton = alertDialog.findViewById(checkedId) as? RadioButton
+                ?: throw RuntimeException("Couldn't find the right radioButton")
+
+            val filter: Filter = when (val radioButtonText = radioButton.text.toString()) {
+                getString(R.string.by_title) -> Filter.BY_TITLE
+                getString(R.string.by_create_date) -> Filter.BY_CREATE_DATE
+                getString(R.string.by_change_date) -> Filter.BY_CHANGE_DATE
+                else -> throw java.lang.RuntimeException("Unknown type $radioButtonText")
+            }
+            viewModel.getNoteListByFilter(filter)
+            alertDialog.dismiss()
+        }
+
+    }
+
+    private fun createSortingAlertDialog(): AlertDialog {
+        return AlertDialog.Builder(requireContext())
+            .setView(R.layout.alert_dialog_sorting)
+            .setCancelable(true)
+            .create()
     }
 
     override fun onDestroyView() {

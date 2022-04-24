@@ -19,6 +19,10 @@
     <string name="lock">Lock</string>
     <string name="unlock">Unlock</string>
     <string name ="incorrect_password">Incorrect password</string>
+    <string name="sorting">Sorting</string>
+    <string name="by_title">By title</string>
+    <string name="by_create_date">By create date</string>
+    <string name="by_change_date">By change date</string>
 
     <string-array name="alert_dialog_menu_lock">
         <item>Edit</item>
@@ -33,6 +37,6 @@
         <item>Delete</item>
         <item>Share</item>
         <item>Export</item>
-        <item>UnLock by password</item>
+        <item>Unlock by password</item>
     </string-array>
 </resources>

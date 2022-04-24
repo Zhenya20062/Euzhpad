@@ -52,6 +52,7 @@ class NoteItemViewModel(
             val noteItem = NoteItem(
                 title = title,
                 content = content,
+                createDate = noteDate.getFullDate(System.currentTimeMillis()),
                 lastEditTime = noteDate.getFullDate(System.currentTimeMillis())
             )
             viewModelScope.launch {

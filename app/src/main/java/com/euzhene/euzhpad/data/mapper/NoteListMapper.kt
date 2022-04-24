@@ -10,6 +10,7 @@ class NoteListMapper @Inject constructor() {
             noteItemDbModel.id,
             noteItemDbModel.title,
             noteItemDbModel.content,
+            noteItemDbModel.createDate,
             noteItemDbModel.lastEditTime,
             noteItemDbModel.password
         )
@@ -22,7 +23,9 @@ class NoteListMapper @Inject constructor() {
             noteItem.id,
             noteItem.title,
             noteItem.content,
+            noteItem.createDate,
             noteItem.lastEditTime,
             noteItem.password
         )
+
 }
