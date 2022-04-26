@@ -24,11 +24,18 @@ class NoteItemViewModel(
     val shouldCloseScreen: LiveData<Unit>
         get() = _shouldCloseScreen
 
+    private val _title = MutableLiveData<String>()
+    val title: LiveData<String>
+        get() = _title
+
+    private val _content = MutableLiveData<String>()
+    val content: LiveData<String>
+        get() = _content
 
     fun editNoteItem(inputTitle: String?, inputContent: String?) {
         val title = parseInput(inputTitle)
         val content = parseInput(inputContent)
-        val fieldsCorrect = validateInput(title, content)
+        val fieldsCorrect = title.isNotBlank()
         if (fieldsCorrect) {
             _noteItem.value?.let {
                 val noteItem = it.copy(
@@ -64,8 +71,17 @@ class NoteItemViewModel(
 
     fun getNoteItem(noteItemId: Int) {
         viewModelScope.launch {
-            _noteItem.postValue(getNoteItemUseCase(noteItemId))
+            val noteItem = getNoteItemUseCase(noteItemId)
+            _noteItem.postValue(noteItem)
+            _title.value = noteItem.title
+            _content.value = noteItem.content
+
         }
+    }
+
+    fun updateNote(title: String, content: String) {
+        _title.value = title
+        _content.value = content
     }
 
     fun concatenateTitleAndContent(title: String, content: String): String {

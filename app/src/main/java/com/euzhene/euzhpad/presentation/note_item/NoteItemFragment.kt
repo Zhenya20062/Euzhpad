@@ -53,16 +53,19 @@ class NoteItemFragment : Fragment() {
         (requireActivity() as AppCompatActivity).setSupportActionBar(
             binding.editNoteToolbar as Toolbar
         )
-        when (screenMode) {
-            EDIT_MODE_VALUE -> {
-                viewModel.getNoteItem(noteItemId)
-                binding.viewModel = viewModel
-                binding.lifecycleOwner = viewLifecycleOwner
-            }
-            NEW_NOTE_MODE_VALUE -> {
+        if (savedInstanceState == null) {
+            when (screenMode) {
+                EDIT_MODE_VALUE -> {
+                    viewModel.getNoteItem(noteItemId)
+                }
+                NEW_NOTE_MODE_VALUE -> {
 
+                }
             }
+
         }
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
 
         observeViewModel()
     }
@@ -137,6 +140,15 @@ class NoteItemFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        viewModel.updateNote(
+            binding.etTitle.text.toString(),
+            binding.etContent.text.toString()
+        )
+
     }
 
     companion object {

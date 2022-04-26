@@ -64,7 +64,7 @@ class NoteListFragment : Fragment() {
     private fun setupRecyclerView() {
         binding.rvNoteList.adapter = noteListAdapter
         noteListAdapter.onItemClick = {
-            passPassword(it)
+            passPassword(it, R.string.settings_edit)
         }
         noteListAdapter.onItemLongClick = {
             createOptionsAlertDialog(it).show()
@@ -88,9 +88,9 @@ class NoteListFragment : Fragment() {
 
         return DialogInterface.OnClickListener { _, which ->
             when (resources.getStringArray(R.array.alert_dialog_menu_lock)[which]) {
-                getString(R.string.settings_edit) -> passPassword(noteItem)
-                getString(R.string.settings_delete) -> viewModel.deleteNoteItem(noteItem)
-                getString(R.string.settings_share) -> share(noteItem)
+                getString(R.string.settings_edit) -> passPassword(noteItem, R.string.settings_edit)
+                getString(R.string.settings_delete) -> passPassword(noteItem, R.string.settings_delete)
+                getString(R.string.settings_share) -> passPassword(noteItem, R.string.settings_share)
                 getString(R.string.settings_export) -> {
                     //todo
                 }
@@ -150,12 +150,15 @@ class NoteListFragment : Fragment() {
             .addToBackStack(null)
             .setTransition(TRANSIT_FRAGMENT_OPEN)
             .commit()
-
     }
 
-    private fun passPassword(noteItem: NoteItem) {
+    private fun passPassword(noteItem: NoteItem, stringId: Int) {
         if (noteItem.password.isNullOrEmpty()) {
-            openEditMode(noteItem)
+            when (stringId) {
+                R.string.settings_edit -> openEditMode(noteItem)
+                R.string.settings_delete -> viewModel.deleteNoteItem(noteItem)
+                R.string.settings_share -> share(noteItem)
+            }
         } else {
             val alertDialog = createPasswordAlertDialog(noteItem.password.isNullOrEmpty())
                 .apply { show() }
@@ -170,8 +173,11 @@ class NoteListFragment : Fragment() {
                 val password = et.text.toString()
 
                 if (noteItem.password == password) {
-                    openEditMode(noteItem)
-
+                    when (stringId) {
+                        R.string.settings_edit -> openEditMode(noteItem)
+                        R.string.settings_delete -> viewModel.deleteNoteItem(noteItem)
+                        R.string.settings_share -> share(noteItem)
+                    }
                     alertDialog.dismiss()
                 } else {
                     et.error = getString(R.string.incorrect_password)
@@ -218,7 +224,7 @@ class NoteListFragment : Fragment() {
 
         val radioGroup: RadioGroup = alertDialog.findViewById(R.id.radio_group_sorting)
             ?: throw RuntimeException("Couldn't find the right radioGroup")
-        val radioBtnId = when(viewModel.getDefaultFilter()) {
+        val radioBtnId = when (viewModel.getDefaultFilter()) {
             Filter.BY_TITLE -> R.id.rb_title
             Filter.BY_CHANGE_DATE -> R.id.rb_change_date
             Filter.BY_CREATE_DATE -> R.id.rb_create_date
