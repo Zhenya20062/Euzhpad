@@ -6,10 +6,12 @@ import android.content.SharedPreferences
 import com.euzhene.euzhpad.presentation.note_list.NoteListFragment
 import dagger.Module
 import dagger.Provides
+import javax.inject.Singleton
 
 @Module
 class SharedPrefModule {
     @Provides
+    @Singleton
     fun provideSharedPreferences(application: Application): SharedPreferences =
         application.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
 

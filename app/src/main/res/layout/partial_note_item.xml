@@ -22,12 +22,14 @@
                 android:ellipsize="end"
                 android:textSize="20sp"
                 android:textStyle="bold"
+                android:textColor="@color/icon"
                 tools:text="Challenges" />
 
             <TextView
                 android:id="@+id/tv_last_edit_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/icon"
                 tools:text="2022/04/21 11:52" />
 
             <View

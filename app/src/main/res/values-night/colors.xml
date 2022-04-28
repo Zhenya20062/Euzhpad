@@ -7,6 +7,6 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="toolbar">#f2f2f2</color>
-    <color name="icon">@color/black</color>
+    <color name="toolbar">#0f0b00</color>
+    <color name="icon">@color/white</color>
 </resources>
