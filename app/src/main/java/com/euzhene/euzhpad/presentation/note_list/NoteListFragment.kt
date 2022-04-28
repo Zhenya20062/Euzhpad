@@ -2,6 +2,7 @@ package com.euzhene.euzhpad.presentation.note_list
 
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.*
 import android.widget.Button
@@ -21,6 +22,7 @@ import com.euzhene.euzhpad.di.ExampleApp
 import com.euzhene.euzhpad.domain.entity.Filter
 import com.euzhene.euzhpad.domain.entity.NoteItem
 import com.euzhene.euzhpad.presentation.note_item.NoteItemFragment
+import com.euzhene.euzhpad.presentation.preferences.PreferencesFragment
 import javax.inject.Inject
 
 class NoteListFragment : Fragment() {
@@ -34,6 +36,7 @@ class NoteListFragment : Fragment() {
 
     @Inject
     lateinit var viewModelFactory: NoteListViewModelFactory
+
     private val viewModel by lazy {
         ViewModelProvider(this, viewModelFactory)[NoteListViewModel::class.java]
     }
@@ -204,7 +207,11 @@ class NoteListFragment : Fragment() {
             getString(R.string.new_note) -> openNewNoteMode()
             getString(R.string.filter) -> sort()
             getString(R.string.preferences) -> {
-                //todo
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .addToBackStack(null)
+                    .replace(R.id.main_container, PreferencesFragment.newIntent())
+                    .setTransition(TRANSIT_FRAGMENT_OPEN)
+                    .commit()
 
             }
             getString(R.string.donate) -> {

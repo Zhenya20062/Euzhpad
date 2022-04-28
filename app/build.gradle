@@ -18,9 +18,14 @@ android {
     }
 
     buildTypes {
+
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
         }
     }
     compileOptions {
@@ -53,5 +58,7 @@ dependencies {
     //dagger
     implementation 'com.google.dagger:dagger:2.41'
     kapt 'com.google.dagger:dagger-compiler:2.41'
+
+    implementation 'androidx.preference:preference:1.2.0'
 
 }

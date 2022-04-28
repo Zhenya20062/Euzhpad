@@ -23,6 +23,9 @@
     <string name="by_title">By title</string>
     <string name="by_create_date">By create date</string>
     <string name="by_change_date">By change date</string>
+    <string name="theme">Theme</string>
+    <string name="dark_theme">Dark theme</string>
+    <string name="use_dark_theme">Use dark theme</string>
 
     <string-array name="alert_dialog_menu_lock">
         <item>Edit</item>
