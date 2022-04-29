@@ -9,4 +9,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="toolbar">#f2f2f2</color>
     <color name="icon">@color/black</color>
+    <color name="alert_dialog_lock">#158f28</color>
+    <color name="splash_bg">#d1ffdd</color>
+    <color name="icon_logo">#57595e</color>
 </resources>

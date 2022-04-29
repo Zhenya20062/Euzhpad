@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.euzhene.euzhpad.databinding.ActivityMainBinding
 import com.euzhene.euzhpad.di.AppComponent
 import com.euzhene.euzhpad.di.DaggerAppComponent
@@ -24,6 +25,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         component.inject(this)
         super.onCreate(savedInstanceState)
+        installSplashScreen()
         setContentView(binding.root)
         val themeId = sharedPreferences.getInt(
             PreferencesFragment.KEY_THEME,

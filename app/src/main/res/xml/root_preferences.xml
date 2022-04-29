@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-<PreferenceCategory android:title="@string/theme">
-    <CheckBoxPreference
-        android:title="@string/dark_theme"
-        android:key="dark theme"
-        android:summary="@string/use_dark_theme"
-        />
-</PreferenceCategory>
+    <PreferenceCategory android:title="@string/theme">
+        <CheckBoxPreference
+            android:key="dark theme"
+            android:summary="@string/use_dark_theme"
+            android:title="@string/dark_theme" />
+    </PreferenceCategory>
 </PreferenceScreen>
