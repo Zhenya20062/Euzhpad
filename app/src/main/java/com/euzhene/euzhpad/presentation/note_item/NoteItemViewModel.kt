@@ -40,7 +40,7 @@ class NoteItemViewModel(
     val content: LiveData<String>
         get() = _content
 
-    private fun validateInputState(inputTitle: String?, inputContent: String?):Boolean {
+    private fun validateInputState(inputTitle: String, inputContent: String):Boolean {
         val title = parseInput(inputTitle)
         val content = parseInput(inputContent)
 
@@ -57,12 +57,12 @@ class NoteItemViewModel(
         }
         return true
     }
-    fun editNoteItem(inputTitle: String?, inputContent: String?) {
+    fun editNoteItem(inputTitle: String, inputContent: String) {
         if (validateInputState(inputTitle, inputContent)) {
             _noteItem.value?.let {
                 val noteItem = it.copy(
-                    title = inputTitle.toString(),
-                    content = inputContent.toString(),
+                    title = inputTitle,
+                    content = inputContent,
                     lastEditTime = getFullDate(System.currentTimeMillis())
                 )
                 viewModelScope.launch {
@@ -73,11 +73,11 @@ class NoteItemViewModel(
         }
     }
 
-    fun addNoteItem(inputTitle: String?, inputContent: String?) {
+    fun addNoteItem(inputTitle: String, inputContent: String) {
         if (validateInputState(inputTitle, inputContent)) {
             val noteItem = NoteItem(
-                title = inputTitle.toString(),
-                content = inputContent.toString(),
+                title = inputTitle,
+                content = inputContent,
                 createDate = getFullDate(System.currentTimeMillis()),
                 lastEditTime = getFullDate(System.currentTimeMillis())
             )
@@ -108,12 +108,18 @@ class NoteItemViewModel(
         return title + space + content
     }
 
+    fun noteNotChanged(title: String, content: String):Boolean {
+        val  titleNotChanged = title == _title.value
+        val contentNotChanged = content == _content.value
+        return titleNotChanged && contentNotChanged
+    }
+
 
     private fun validateInput(title: String, content: String): Boolean {
         return !(title.isBlank() && content.isBlank())
     }
 
-    private fun parseInput(input: String?): String {
-        return input?.trim() ?: ""
+    private fun parseInput(input: String): String {
+        return input.trim()
     }
 }

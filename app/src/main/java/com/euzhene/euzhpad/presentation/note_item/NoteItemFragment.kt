@@ -1,9 +1,12 @@
 package com.euzhene.euzhpad.presentation.note_item
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -64,7 +67,40 @@ class NoteItemFragment : Fragment() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
+        setBackPressCallback()
+
         observeViewModel()
+    }
+
+    private fun setBackPressCallback() {
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (!viewModel.noteNotChanged(
+                        binding.etTitle.text.toString(),
+                        binding.etContent.text.toString()
+                    )
+                ) {
+                   val okayListener =  DialogInterface.OnClickListener {_,_ ->
+                       save()
+                   }
+                    val cancelListener = DialogInterface.OnClickListener {_,_->
+                        requireActivity().supportFragmentManager.popBackStack()
+                    }
+
+                    AlertDialog.Builder(requireContext())
+                        .setCancelable(true)
+                        .setTitle(R.string.save_note_title)
+                        .setMessage(R.string.save_note_message)
+                        .setPositiveButton(R.string.okay, okayListener)
+                        .setNegativeButton(R.string.cancel, cancelListener)
+                        .create()
+                        .show()
+                }
+
+            }
+
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
     }
 
     private fun observeViewModel() {
@@ -77,6 +113,7 @@ class NoteItemFragment : Fragment() {
         }
         viewModel.fieldsNotChanged.observe(viewLifecycleOwner) {
             requireActivity().onBackPressed()
+
         }
     }
 
