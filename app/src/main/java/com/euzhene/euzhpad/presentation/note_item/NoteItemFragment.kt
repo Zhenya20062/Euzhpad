@@ -3,6 +3,7 @@ package com.euzhene.euzhpad.presentation.note_item
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -12,6 +13,7 @@ import com.euzhene.euzhpad.databinding.FragmentNoteEditBinding
 import com.euzhene.euzhpad.di.AppComponent
 import com.euzhene.euzhpad.di.ExampleApp
 import com.euzhene.euzhpad.domain.entity.NoteItem
+import com.google.android.material.snackbar.Snackbar
 import java.lang.RuntimeException
 import javax.inject.Inject
 
@@ -68,7 +70,14 @@ class NoteItemFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        viewModel.shouldCloseScreen.observe(viewLifecycleOwner) {
+        viewModel.successfullySaved.observe(viewLifecycleOwner) {
+            Toast.makeText(requireContext(), R.string.saved, Toast.LENGTH_SHORT).show()
+            requireActivity().onBackPressed()
+        }
+        viewModel.fieldsEmpty.observe(viewLifecycleOwner) {
+            Toast.makeText(requireContext(), R.string.empty_note, Toast.LENGTH_SHORT).show()
+        }
+        viewModel.fieldsNotChanged.observe(viewLifecycleOwner) {
             requireActivity().onBackPressed()
         }
     }

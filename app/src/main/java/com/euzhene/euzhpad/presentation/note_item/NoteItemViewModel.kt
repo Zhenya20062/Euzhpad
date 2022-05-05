@@ -20,9 +20,17 @@ class NoteItemViewModel(
     val noteItem: LiveData<NoteItem>
         get() = _noteItem
 
-    private val _shouldCloseScreen = MutableLiveData<Unit>()
-    val shouldCloseScreen: LiveData<Unit>
-        get() = _shouldCloseScreen
+    private val _successfullySaved = MutableLiveData<Unit>()
+    val successfullySaved: LiveData<Unit>
+        get() = _successfullySaved
+
+    private val _fieldsEmpty = MutableLiveData<Unit>()
+    val fieldsEmpty: LiveData<Unit>
+        get() = _fieldsEmpty
+
+    private val _fieldsNotChanged = MutableLiveData<Unit>()
+    val fieldsNotChanged: LiveData<Unit>
+        get() = _fieldsNotChanged
 
     private val _title = MutableLiveData<String>()
     val title: LiveData<String>
@@ -32,46 +40,50 @@ class NoteItemViewModel(
     val content: LiveData<String>
         get() = _content
 
-    fun editNoteItem(inputTitle: String?, inputContent: String?) {
+    private fun validateInputState(inputTitle: String?, inputContent: String?):Boolean {
         val title = parseInput(inputTitle)
         val content = parseInput(inputContent)
 
         val fieldsChanged = title != noteItem.value?.title || content != noteItem.value?.content
         if (!fieldsChanged) {
-            finishWork()
-            return
+            _fieldsNotChanged.value = Unit
+            return false
         }
 
-        val fieldsCorrect = title.isNotBlank()
-        if (fieldsCorrect) {
+        val fieldsCorrect = validateInput(title, content)
+        if (!fieldsCorrect) {
+            _fieldsEmpty.value = Unit
+            return false
+        }
+        return true
+    }
+    fun editNoteItem(inputTitle: String?, inputContent: String?) {
+        if (validateInputState(inputTitle, inputContent)) {
             _noteItem.value?.let {
                 val noteItem = it.copy(
-                    title = title,
-                    content = content,
+                    title = inputTitle.toString(),
+                    content = inputContent.toString(),
                     lastEditTime = noteDate.getFullDate(System.currentTimeMillis())
                 )
                 viewModelScope.launch {
                     editNoteItemUseCase(noteItem)
-                    finishWork()
+                    _successfullySaved.value = Unit
                 }
             }
         }
     }
 
     fun addNoteItem(inputTitle: String?, inputContent: String?) {
-        val title = parseInput(inputTitle)
-        val content = parseInput(inputContent)
-        val fieldsCorrect = validateInput(title, content)
-        if (fieldsCorrect) {
+        if (validateInputState(inputTitle, inputContent)) {
             val noteItem = NoteItem(
-                title = title,
-                content = content,
+                title = inputTitle.toString(),
+                content = inputContent.toString(),
                 createDate = noteDate.getFullDate(System.currentTimeMillis()),
                 lastEditTime = noteDate.getFullDate(System.currentTimeMillis())
             )
             viewModelScope.launch {
                 addNoteItemUseCase(noteItem)
-                finishWork()
+                _successfullySaved.value = Unit
             }
         }
     }
@@ -96,12 +108,9 @@ class NoteItemViewModel(
         return title + space + content
     }
 
-    private fun finishWork() {
-        _shouldCloseScreen.postValue(Unit)
-    }
 
     private fun validateInput(title: String, content: String): Boolean {
-        return !(title.isBlank() || content.isBlank())
+        return !(title.isBlank() && content.isBlank())
     }
 
     private fun parseInput(input: String?): String {

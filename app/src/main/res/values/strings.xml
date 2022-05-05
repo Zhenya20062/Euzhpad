@@ -18,7 +18,7 @@
     <string name="save">Save</string>
     <string name="lock">Lock</string>
     <string name="unlock">Unlock</string>
-    <string name ="incorrect_password">Incorrect password</string>
+    <string name="incorrect_password">Incorrect password</string>
     <string name="sorting">Sorting</string>
     <string name="by_title">By title</string>
     <string name="by_create_date">By create date</string>
@@ -26,6 +26,8 @@
     <string name="theme">Theme</string>
     <string name="dark_theme">Dark theme</string>
     <string name="use_dark_theme">Use dark theme</string>
+    <string name="saved">Saved</string>
+    <string name="empty_note">Empty note</string>
 
     <string-array name="alert_dialog_menu_lock">
         <item>Edit</item>
