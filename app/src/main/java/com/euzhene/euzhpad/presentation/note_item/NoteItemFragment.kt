@@ -58,9 +58,6 @@ class NoteItemFragment : Fragment() {
                 EDIT_MODE_VALUE -> {
                     viewModel.getNoteItem(noteItemId)
                 }
-                NEW_NOTE_MODE_VALUE -> {
-
-                }
             }
 
         }

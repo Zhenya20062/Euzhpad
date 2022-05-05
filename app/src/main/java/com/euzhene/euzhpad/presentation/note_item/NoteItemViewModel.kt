@@ -35,6 +35,13 @@ class NoteItemViewModel(
     fun editNoteItem(inputTitle: String?, inputContent: String?) {
         val title = parseInput(inputTitle)
         val content = parseInput(inputContent)
+
+        val fieldsChanged = title != noteItem.value?.title || content != noteItem.value?.content
+        if (!fieldsChanged) {
+            finishWork()
+            return
+        }
+
         val fieldsCorrect = title.isNotBlank()
         if (fieldsCorrect) {
             _noteItem.value?.let {
@@ -88,7 +95,6 @@ class NoteItemViewModel(
         val space = "\n\n"
         return title + space + content
     }
-
 
     private fun finishWork() {
         _shouldCloseScreen.postValue(Unit)
