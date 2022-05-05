@@ -8,13 +8,13 @@ import com.euzhene.euzhpad.domain.entity.NoteItem
 import com.euzhene.euzhpad.domain.usecase.AddNoteItemUseCase
 import com.euzhene.euzhpad.domain.usecase.EditNoteItemUseCase
 import com.euzhene.euzhpad.domain.usecase.GetNoteItemUseCase
+import com.euzhene.euzhpad.presentation.util.getFullDate
 import kotlinx.coroutines.launch
 
 class NoteItemViewModel(
     private val addNoteItemUseCase: AddNoteItemUseCase,
     private val editNoteItemUseCase: EditNoteItemUseCase,
     private val getNoteItemUseCase: GetNoteItemUseCase,
-    private val noteDate: NoteDate
 ) : ViewModel() {
     private val _noteItem = MutableLiveData<NoteItem>()
     val noteItem: LiveData<NoteItem>
@@ -63,7 +63,7 @@ class NoteItemViewModel(
                 val noteItem = it.copy(
                     title = inputTitle.toString(),
                     content = inputContent.toString(),
-                    lastEditTime = noteDate.getFullDate(System.currentTimeMillis())
+                    lastEditTime = getFullDate(System.currentTimeMillis())
                 )
                 viewModelScope.launch {
                     editNoteItemUseCase(noteItem)
@@ -78,8 +78,8 @@ class NoteItemViewModel(
             val noteItem = NoteItem(
                 title = inputTitle.toString(),
                 content = inputContent.toString(),
-                createDate = noteDate.getFullDate(System.currentTimeMillis()),
-                lastEditTime = noteDate.getFullDate(System.currentTimeMillis())
+                createDate = getFullDate(System.currentTimeMillis()),
+                lastEditTime = getFullDate(System.currentTimeMillis())
             )
             viewModelScope.launch {
                 addNoteItemUseCase(noteItem)

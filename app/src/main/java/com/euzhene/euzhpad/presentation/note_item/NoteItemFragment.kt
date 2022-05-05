@@ -13,8 +13,6 @@ import com.euzhene.euzhpad.databinding.FragmentNoteEditBinding
 import com.euzhene.euzhpad.di.AppComponent
 import com.euzhene.euzhpad.di.ExampleApp
 import com.euzhene.euzhpad.domain.entity.NoteItem
-import com.google.android.material.snackbar.Snackbar
-import java.lang.RuntimeException
 import javax.inject.Inject
 
 class NoteItemFragment : Fragment() {
