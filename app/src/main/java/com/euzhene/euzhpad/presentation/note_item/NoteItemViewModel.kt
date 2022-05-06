@@ -61,8 +61,8 @@ class NoteItemViewModel(
         if (validateInputState(inputTitle, inputContent)) {
             _noteItem.value?.let {
                 val noteItem = it.copy(
-                    title = inputTitle,
-                    content = inputContent,
+                    title = parseInput(inputTitle),
+                    content = parseInput(inputContent),
                     lastEditTime = getFullDate(System.currentTimeMillis())
                 )
                 viewModelScope.launch {
@@ -76,8 +76,8 @@ class NoteItemViewModel(
     fun addNoteItem(inputTitle: String, inputContent: String) {
         if (validateInputState(inputTitle, inputContent)) {
             val noteItem = NoteItem(
-                title = inputTitle,
-                content = inputContent,
+                title = parseInput(inputTitle),
+                content = parseInput(inputContent),
                 createDate = getFullDate(System.currentTimeMillis()),
                 lastEditTime = getFullDate(System.currentTimeMillis())
             )

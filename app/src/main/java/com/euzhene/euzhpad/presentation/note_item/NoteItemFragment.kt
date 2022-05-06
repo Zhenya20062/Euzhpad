@@ -80,10 +80,10 @@ class NoteItemFragment : Fragment() {
                         binding.etContent.text.toString()
                     )
                 ) {
-                   val okayListener =  DialogInterface.OnClickListener {_,_ ->
-                       save()
-                   }
-                    val cancelListener = DialogInterface.OnClickListener {_,_->
+                    val okayListener = DialogInterface.OnClickListener { _, _ ->
+                        save()
+                    }
+                    val cancelListener = DialogInterface.OnClickListener { _, _ ->
                         requireActivity().supportFragmentManager.popBackStack()
                     }
 
@@ -95,6 +95,8 @@ class NoteItemFragment : Fragment() {
                         .setNegativeButton(R.string.cancel, cancelListener)
                         .create()
                         .show()
+                } else {
+                    requireActivity().supportFragmentManager.popBackStack()
                 }
 
             }
@@ -106,13 +108,14 @@ class NoteItemFragment : Fragment() {
     private fun observeViewModel() {
         viewModel.successfullySaved.observe(viewLifecycleOwner) {
             Toast.makeText(requireContext(), R.string.saved, Toast.LENGTH_SHORT).show()
-            requireActivity().onBackPressed()
+            requireActivity().supportFragmentManager.popBackStack()
+
         }
         viewModel.fieldsEmpty.observe(viewLifecycleOwner) {
             Toast.makeText(requireContext(), R.string.empty_note, Toast.LENGTH_SHORT).show()
         }
         viewModel.fieldsNotChanged.observe(viewLifecycleOwner) {
-            requireActivity().onBackPressed()
+            requireActivity().supportFragmentManager.popBackStack()
 
         }
     }

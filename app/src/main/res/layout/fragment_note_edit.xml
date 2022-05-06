@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
     <data>
         <variable
             name="viewModel"
@@ -10,7 +11,6 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
         <include
             android:id="@+id/edit_note_toolbar"
             layout="@layout/edit_note_toolbar" />
@@ -25,21 +25,33 @@
             android:inputType="textLongMessage|textCapSentences|textAutoCorrect"
             android:text="@{viewModel.title}"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/edit_note_toolbar" />
 
-        <EditText
-            android:id="@+id/et_content"
+        <ScrollView
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:hint="@string/note"
-            android:inputType="textCapSentences|textAutoCorrect|textMultiLine"
-            android:text="@{viewModel.content}"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/et_title" />
+            app:layout_constraintTop_toBottomOf="@id/et_title"
+            app:layout_constraintVertical_bias="0.0">
+
+            <EditText
+                android:id="@+id/et_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/note"
+                android:inputType="textCapSentences|textAutoCorrect|textMultiLine"
+                android:text="@{viewModel.content}"
+
+                tools:text="d\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nd\ndd hello my friend nice to meet you. I'm here to announce something crucial and important and of course useful" />
+        </ScrollView>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
