@@ -75,16 +75,20 @@ class NoteItemFragment : Fragment() {
     private fun setBackPressCallback() {
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (!viewModel.noteNotChanged(
-                        binding.etTitle.text.toString(),
-                        binding.etContent.text.toString()
-                    )
+                val title = binding.etTitle.text.toString()
+                val content = binding.etContent.text.toString()
+                if (!viewModel.noteNotChanged(title, content)
                 ) {
                     val okayListener = DialogInterface.OnClickListener { _, _ ->
-                        save()
+                        if (title.isBlank() && content.isBlank()) {
+                            close()
+                        } else {
+                            save()
+                        }
+
                     }
                     val cancelListener = DialogInterface.OnClickListener { _, _ ->
-                        requireActivity().supportFragmentManager.popBackStack()
+                        close()
                     }
 
                     AlertDialog.Builder(requireContext())
@@ -96,13 +100,16 @@ class NoteItemFragment : Fragment() {
                         .create()
                         .show()
                 } else {
-                    requireActivity().supportFragmentManager.popBackStack()
+                    close()
                 }
 
             }
 
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+    }
+    private fun close() {
+        requireActivity().supportFragmentManager.popBackStack()
     }
 
     private fun observeViewModel() {
@@ -165,7 +172,7 @@ class NoteItemFragment : Fragment() {
     }
 
     private fun save() {
-        val title =  binding.etTitle.text.toString()
+        val title = binding.etTitle.text.toString()
         val content = binding.etContent.text.toString()
         when (screenMode) {
             EDIT_MODE_VALUE -> viewModel.editNoteItem(title, content)
