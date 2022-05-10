@@ -32,11 +32,11 @@ class NoteItemViewModel(
     val fieldsNotChanged: LiveData<Unit>
         get() = _fieldsNotChanged
 
-    private val _title = MutableLiveData<String>()
+    private val _title = MutableLiveData<String>("")
     val title: LiveData<String>
         get() = _title
 
-    private val _content = MutableLiveData<String>()
+    private val _content = MutableLiveData<String>("")
     val content: LiveData<String>
         get() = _content
 

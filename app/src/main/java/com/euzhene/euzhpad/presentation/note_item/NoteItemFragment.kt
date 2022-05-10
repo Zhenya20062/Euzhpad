@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.euzhene.euzhpad.R
 import com.euzhene.euzhpad.databinding.FragmentNoteEditBinding
 import com.euzhene.euzhpad.di.AppComponent
-import com.euzhene.euzhpad.di.ExampleApp
+import com.euzhene.euzhpad.presentation.NoteApp
 import com.euzhene.euzhpad.domain.entity.NoteItem
 import javax.inject.Inject
 
@@ -26,7 +26,7 @@ class NoteItemFragment : Fragment() {
     private var noteItemId: Int = NoteItem.UNKNOWN_ID
     private var screenMode = UNKNOWN_MODE
     private val component: AppComponent by lazy {
-        (requireActivity().application as ExampleApp).component
+        (requireActivity().application as NoteApp).component
     }
 
     @Inject
@@ -144,10 +144,7 @@ class NoteItemFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.title) {
-            getString(R.string.save) -> {
-                if (screenMode == EDIT_MODE_VALUE) save()
-                else add()
-            }
+            getString(R.string.save) -> save()
             getString(R.string.share) -> share()
         }
         return super.onOptionsItemSelected(item)
@@ -167,18 +164,13 @@ class NoteItemFragment : Fragment() {
         startActivity(shareIntent)
     }
 
-    private fun add() {
-        viewModel.addNoteItem(
-            binding.etTitle.text.toString(),
-            binding.etContent.text.toString()
-        )
-    }
-
     private fun save() {
-        viewModel.editNoteItem(
-            binding.etTitle.text.toString(),
-            binding.etContent.text.toString()
-        )
+        val title =  binding.etTitle.text.toString()
+        val content = binding.etContent.text.toString()
+        when (screenMode) {
+            EDIT_MODE_VALUE -> viewModel.editNoteItem(title, content)
+            NEW_NOTE_MODE_VALUE -> viewModel.addNoteItem(title, content)
+        }
     }
 
     override fun onDestroyView() {

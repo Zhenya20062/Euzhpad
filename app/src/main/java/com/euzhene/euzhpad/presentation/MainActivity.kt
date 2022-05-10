@@ -7,8 +7,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.euzhene.euzhpad.databinding.ActivityMainBinding
 import com.euzhene.euzhpad.di.AppComponent
-import com.euzhene.euzhpad.di.DaggerAppComponent
-import com.euzhene.euzhpad.di.ExampleApp
 import com.euzhene.euzhpad.presentation.preferences.PreferencesFragment
 import javax.inject.Inject
 
@@ -17,7 +15,7 @@ class MainActivity : AppCompatActivity() {
         ActivityMainBinding.inflate(layoutInflater)
     }
     private val component:AppComponent by lazy {
-        ( application as ExampleApp).component
+        ( application as NoteApp).component
     }
     @Inject
     lateinit var sharedPreferences: SharedPreferences

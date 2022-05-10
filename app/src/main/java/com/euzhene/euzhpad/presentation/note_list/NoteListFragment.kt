@@ -2,7 +2,6 @@ package com.euzhene.euzhpad.presentation.note_list
 
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.*
 import android.widget.Button
@@ -11,14 +10,13 @@ import android.widget.RadioButton
 import android.widget.RadioGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN
 import androidx.lifecycle.ViewModelProvider
 import com.euzhene.euzhpad.R
 import com.euzhene.euzhpad.databinding.FragmentNoteListBinding
 import com.euzhene.euzhpad.di.AppComponent
-import com.euzhene.euzhpad.di.ExampleApp
+import com.euzhene.euzhpad.presentation.NoteApp
 import com.euzhene.euzhpad.domain.entity.Filter
 import com.euzhene.euzhpad.domain.entity.NoteItem
 import com.euzhene.euzhpad.presentation.note_item.NoteItemFragment
@@ -31,7 +29,7 @@ class NoteListFragment : Fragment() {
         get() = _binding ?: throw RuntimeException("FragmentNoteListBinding = null")
 
     private val component: AppComponent by lazy {
-        (requireActivity().application as ExampleApp).component
+        (requireActivity().application as NoteApp).component
     }
 
     @Inject

@@ -7,12 +7,12 @@ import androidx.preference.CheckBoxPreference
 import androidx.preference.PreferenceFragmentCompat
 import com.euzhene.euzhpad.R
 import com.euzhene.euzhpad.di.AppComponent
-import com.euzhene.euzhpad.di.ExampleApp
+import com.euzhene.euzhpad.presentation.NoteApp
 import javax.inject.Inject
 
 class PreferencesFragment : PreferenceFragmentCompat() {
     private val component: AppComponent by lazy {
-        (requireActivity().application as ExampleApp).component
+        (requireActivity().application as NoteApp).component
     }
 
     @Inject
