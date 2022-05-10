@@ -29,7 +29,7 @@
     <string name="saved">Saved</string>
     <string name="empty_note">Empty note</string>
     <string name="save_note_title">Save a note</string>
-    <string name="save_note_message">Do you want to save this note</string>
+    <string name="save_note_message">Do you want to save this note?</string>
     <string name ="cancel">Cancel</string>
     <string name="okay">OK</string>
 

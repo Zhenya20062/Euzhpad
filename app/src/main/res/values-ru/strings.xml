@@ -1,0 +1,51 @@
+<resources>
+    <string name="app_name">Euzhpad</string>
+    <string name="preferences">Настройки</string>
+    <string name="new_note">Новая запись</string>
+    <string name="filter">Фильтр</string>
+    <string name="donate">Задонатить</string>
+    <string name="about">О приложении</string>
+    <string name="settings_edit">Редактировать</string>
+    <string name="settings_delete">Удалить</string>
+    <string name="settings_share">Поделиться</string>
+    <string name="settings_export">Экспортировать</string>
+    <string name="settings_lock">Заблокировать паролем</string>
+    <string name="settings_unlock">Разблокировать паролем</string>
+    <string name="title">Название</string>
+    <string name="note">Заметка</string>
+    <string name="edit_note_toolbar">Edit Note</string>
+    <string name="share">поделиться</string>
+    <string name="save">Сохранить</string>
+    <string name="lock">Заблокировать</string>
+    <string name="unlock">Разблокировать</string>
+    <string name="incorrect_password">Неправильный пароль</string>
+    <string name="sorting">Сортировка</string>
+    <string name="by_title">По названию</string>
+    <string name="by_create_date">По созданию</string>
+    <string name="by_change_date">По последнему изменению</string>
+    <string name="theme">Тема</string>
+    <string name="dark_theme">Темная тема</string>
+    <string name="use_dark_theme">Использовать темную тему</string>
+    <string name="saved">Сохранено</string>
+    <string name="empty_note">Пустая запись</string>
+    <string name="save_note_title">Сохранить запись</string>
+    <string name="save_note_message">Вы хотите сохранить запись?</string>
+    <string name ="cancel">Отменить</string>
+    <string name="okay">OK</string>
+
+    <string-array name="alert_dialog_menu_lock">
+        <item>@string/settings_edit</item>
+        <item>@string/save</item>
+        <item>@string/settings_share</item>
+        <item>@string/settings_export</item>
+        <item>@string/settings_lock</item>
+    </string-array>
+
+    <string-array name="alert_dialog_menu_unlock">
+        <item>@string/settings_edit</item>
+        <item>@string/save</item>
+        <item>@string/settings_share</item>
+        <item>@string/settings_export</item>
+        <item>@string/settings_unlock</item>
+    </string-array>
+</resources>
