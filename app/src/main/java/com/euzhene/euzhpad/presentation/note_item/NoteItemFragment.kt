@@ -9,6 +9,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.euzhene.euzhpad.R
@@ -68,8 +69,16 @@ class NoteItemFragment : Fragment() {
         binding.lifecycleOwner = viewLifecycleOwner
 
         setBackPressCallback()
-
         observeViewModel()
+        setTextChangedListener()
+    }
+    private fun setTextChangedListener() {
+        binding.etTitle.addTextChangedListener {
+            viewModel.updateNote(it.toString(), binding.etContent.text.toString())
+        }
+        binding.etContent.addTextChangedListener {
+            viewModel.updateNote(binding.etTitle.text.toString(), it.toString())
+        }
     }
 
     private fun setBackPressCallback() {
@@ -77,19 +86,13 @@ class NoteItemFragment : Fragment() {
             override fun handleOnBackPressed() {
                 val title = binding.etTitle.text.toString()
                 val content = binding.etContent.text.toString()
-                if (!viewModel.noteNotChanged(title, content)
-                ) {
-                    val okayListener = DialogInterface.OnClickListener { _, _ ->
-                        if (title.isBlank() && content.isBlank()) {
-                            close()
-                        } else {
-                            save()
-                        }
 
+                if (!viewModel.noteNotChanged()) {
+                    val okayListener = DialogInterface.OnClickListener { _, _ ->
+                        if (title.isBlank() && content.isBlank()) close()
+                        else save()
                     }
-                    val cancelListener = DialogInterface.OnClickListener { _, _ ->
-                        close()
-                    }
+                    val cancelListener = DialogInterface.OnClickListener { _, _ -> close() }
 
                     AlertDialog.Builder(requireContext())
                         .setCancelable(true)
@@ -108,6 +111,7 @@ class NoteItemFragment : Fragment() {
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
     }
+
     private fun close() {
         requireActivity().supportFragmentManager.popBackStack()
     }
@@ -116,14 +120,12 @@ class NoteItemFragment : Fragment() {
         viewModel.successfullySaved.observe(viewLifecycleOwner) {
             Toast.makeText(requireContext(), R.string.saved, Toast.LENGTH_SHORT).show()
             requireActivity().supportFragmentManager.popBackStack()
-
         }
         viewModel.fieldsEmpty.observe(viewLifecycleOwner) {
             Toast.makeText(requireContext(), R.string.empty_note, Toast.LENGTH_SHORT).show()
         }
         viewModel.fieldsNotChanged.observe(viewLifecycleOwner) {
             requireActivity().supportFragmentManager.popBackStack()
-
         }
     }
 
@@ -185,14 +187,14 @@ class NoteItemFragment : Fragment() {
         _binding = null
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        viewModel.updateNote(
-            binding.etTitle.text.toString(),
-            binding.etContent.text.toString()
-        )
-
-    }
+//    override fun onSaveInstanceState(outState: Bundle) {
+//        super.onSaveInstanceState(outState)
+//        viewModel.updateNote(
+//            binding.etTitle.text.toString(),
+//            binding.etContent.text.toString()
+//        )
+//
+//    }
 
     companion object {
         private const val NOTE_ITEM_ID_ARG = "note_item_id"

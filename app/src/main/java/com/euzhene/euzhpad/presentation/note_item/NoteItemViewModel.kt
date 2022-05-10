@@ -32,15 +32,15 @@ class NoteItemViewModel(
     val fieldsNotChanged: LiveData<Unit>
         get() = _fieldsNotChanged
 
-    private val _title = MutableLiveData<String>("")
+    private val _title = MutableLiveData("")
     val title: LiveData<String>
         get() = _title
 
-    private val _content = MutableLiveData<String>("")
+    private val _content = MutableLiveData("")
     val content: LiveData<String>
         get() = _content
 
-    private fun validateInputState(inputTitle: String, inputContent: String):Boolean {
+    private fun validateInputState(inputTitle: String, inputContent: String): Boolean {
         val title = parseInput(inputTitle)
         val content = parseInput(inputContent)
 
@@ -57,6 +57,7 @@ class NoteItemViewModel(
         }
         return true
     }
+
     fun editNoteItem(inputTitle: String, inputContent: String) {
         if (validateInputState(inputTitle, inputContent)) {
             _noteItem.value?.let {
@@ -104,13 +105,14 @@ class NoteItemViewModel(
     }
 
     fun concatenateTitleAndContent(title: String, content: String): String {
+
         val space = "\n\n"
         return title + space + content
     }
 
-    fun noteNotChanged(title: String, content: String):Boolean {
-        val  titleNotChanged = title == _title.value
-        val contentNotChanged = content == _content.value
+    fun noteNotChanged(): Boolean {
+        val titleNotChanged = _title.value == _noteItem.value?.title
+        val contentNotChanged = _content.value == _noteItem.value?.content
         return titleNotChanged && contentNotChanged
     }
 

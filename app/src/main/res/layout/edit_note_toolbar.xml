@@ -5,4 +5,4 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:title="@string/edit_note_toolbar"
     android:background="@color/toolbar"
-    android:theme="@style/ThemeOverlay.AppCompat.ActionBar"/>
+    />
