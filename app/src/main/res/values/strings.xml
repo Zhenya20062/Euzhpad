@@ -15,6 +15,7 @@
     <string name="note">Note</string>
     <string name="edit_note_toolbar">Edit Note</string>
     <string name="share">share</string>
+    <string name="search_title">search</string>
     <string name="save">Save</string>
     <string name="lock">Lock</string>
     <string name="unlock">Unlock</string>

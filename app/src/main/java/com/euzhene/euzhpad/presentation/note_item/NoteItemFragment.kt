@@ -2,13 +2,22 @@ package com.euzhene.euzhpad.presentation.note_item
 
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.res.Resources
 import android.os.Bundle
+import android.text.Selection
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.style.BackgroundColorSpan
+import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
+import androidx.core.text.backgroundColor
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -72,6 +81,7 @@ class NoteItemFragment : Fragment() {
         observeViewModel()
         setTextChangedListener()
     }
+
     private fun setTextChangedListener() {
         binding.etTitle.addTextChangedListener {
             viewModel.updateNote(it.toString(), binding.etContent.text.toString())
@@ -127,6 +137,13 @@ class NoteItemFragment : Fragment() {
         viewModel.fieldsNotChanged.observe(viewLifecycleOwner) {
             requireActivity().supportFragmentManager.popBackStack()
         }
+
+        viewModel.foundIndex.observe(viewLifecycleOwner) {
+            Log.i("found index", "observeViewModel: $it")
+            highlightContentString(it.first, it.second)
+            binding.etContent.setSelection(it.first)
+            binding.etContent.requestFocus()
+        }
     }
 
     private fun parseArguments() {
@@ -149,6 +166,18 @@ class NoteItemFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         requireActivity().menuInflater.inflate(R.menu.edit_note_menu, menu)
+        val searchView = (menu.findItem(R.id.note_edit_search).actionView as SearchView)
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                if (query != null) viewModel.updateSearchText(binding.etContent.text.toString(), query)
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return false
+            }
+
+        })
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -195,6 +224,14 @@ class NoteItemFragment : Fragment() {
 //        )
 //
 //    }
+
+    private fun highlightContentString(start: Int, end: Int) {
+        binding.etContent.text.clearSpans()
+        val spannable: Spannable = SpannableString(binding.etContent.text)
+        spannable.setSpan(BackgroundColorSpan(resources.getColor(R.color.purple_200, requireContext().theme)), start, end, Spannable
+            .SPAN_EXCLUSIVE_EXCLUSIVE)
+        binding.etContent.setText(spannable)
+    }
 
     companion object {
         private const val NOTE_ITEM_ID_ARG = "note_item_id"

@@ -8,6 +8,7 @@ import com.euzhene.euzhpad.domain.entity.NoteItem
 import com.euzhene.euzhpad.domain.usecase.AddNoteItemUseCase
 import com.euzhene.euzhpad.domain.usecase.EditNoteItemUseCase
 import com.euzhene.euzhpad.domain.usecase.GetNoteItemUseCase
+import com.euzhene.euzhpad.helpers.SearchTextHelper
 import com.euzhene.euzhpad.presentation.util.getFullDate
 import kotlinx.coroutines.launch
 
@@ -17,8 +18,11 @@ class NoteItemViewModel(
     private val getNoteItemUseCase: GetNoteItemUseCase,
 ) : ViewModel() {
     private val _noteItem = MutableLiveData<NoteItem>()
+    private var _foundIndex = MutableLiveData<Pair<Int,Int>>()
     val noteItem: LiveData<NoteItem>
         get() = _noteItem
+    val foundIndex: LiveData<Pair<Int,Int>>
+        get() = _foundIndex
 
     private val _successfullySaved = MutableLiveData<Unit>()
     val successfullySaved: LiveData<Unit>
@@ -40,6 +44,13 @@ class NoteItemViewModel(
     val content: LiveData<String>
         get() = _content
 
+    private val searchTextHelper = SearchTextHelper()
+
+    fun updateSearchText(noteText:String, searchText:String) {
+        if (searchText != searchTextHelper.previousText) searchTextHelper.reset()
+        searchTextHelper.nextOccurrence(noteText, searchText);
+        _foundIndex.value = Pair(searchTextHelper.startIndex, searchTextHelper.endIndex)
+    }
     private fun validateInputState(inputTitle: String, inputContent: String): Boolean {
         val title = parseInput(inputTitle)
         val content = parseInput(inputContent)

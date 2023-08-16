@@ -15,6 +15,7 @@
     <string name="note">Заметка</string>
     <string name="edit_note_toolbar">Edit Note</string>
     <string name="share">поделиться</string>
+    <string name="search_title">искать</string>
     <string name="save">Сохранить</string>
     <string name="lock">Заблокировать</string>
     <string name="unlock">Разблокировать</string>
