@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace 'com.euzhene.euzhpad'
+    namespace 'com.euzhene.euzhpad_debug'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.euzhene.euzhpad"
+        applicationId "com.euzhene.euzhpad_debug"
         minSdk 24
         targetSdk 33
         versionCode 140
