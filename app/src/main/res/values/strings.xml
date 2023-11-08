@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">Euzhpad Debug</string>
+    <string name="app_name" translatable="false">Euzhpad</string>
     <string name="preferences">Preferences</string>
     <string name="new_note">new note</string>
     <string name="filter">filter</string>

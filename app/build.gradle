@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace 'com.euzhene.euzhpad_debug'
+    namespace 'com.euzhene.euzhpad'
     compileSdk 33
 
     defaultConfig {

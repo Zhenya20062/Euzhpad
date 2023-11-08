@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.euzhene.euzhpad_debug">
+    package="com.euzhene.euzhpad">
 
     <application
-        android:name=".presentation.NoteApp"
+        android:name="com.euzhene.euzhpad.presentation.NoteApp"
         android:allowBackup="true"
         android:icon="@drawable/notepad_icon"
         android:label="@string/app_name"
@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.App.Starting">
         <activity
-            android:name=".presentation.MainActivity"
+            android:name="com.euzhene.euzhpad.presentation.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.App.Starting"
             android:windowSoftInputMode="adjustResize">
