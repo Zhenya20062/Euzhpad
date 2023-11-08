@@ -4,13 +4,21 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
+import com.euzhene.euzhpad_debug.R
 import com.euzhene.euzhpad_debug.domain.entity.Filter
 import com.euzhene.euzhpad_debug.domain.entity.NoteItem
 import com.euzhene.euzhpad_debug.domain.usecase.DeleteNoteItemUseCase
 import com.euzhene.euzhpad_debug.domain.usecase.EditNoteItemUseCase
 import com.euzhene.euzhpad_debug.domain.usecase.GetDefaultFilterUseCase
 import com.euzhene.euzhpad_debug.domain.usecase.GetNoteListUseCase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
+
 
 class NoteListViewModel(
     application: Application,
@@ -20,8 +28,9 @@ class NoteListViewModel(
     private val getDefaultFilterUseCase: GetDefaultFilterUseCase,
 ) : AndroidViewModel(application) {
     var noteList: LiveData<List<NoteItem>> = getNoteListUseCase(Filter.BY_DEFAULT)
+    var message: MutableSharedFlow<String?> = MutableSharedFlow()
 
-    fun editNoteItem(noteItem: NoteItem, password:String?) {
+    fun editNoteItem(noteItem: NoteItem, password: String?) {
         val item = noteItem.copy(password = password)
         viewModelScope.launch {
             editNoteItemUseCase(item)
@@ -42,9 +51,31 @@ class NoteListViewModel(
     fun getNoteListByFilter(filter: Filter) {
         getNoteListUseCase(filter)
     }
-    fun getDefaultFilter():Filter {
+
+    fun getDefaultFilter(): Filter {
         return getDefaultFilterUseCase()
     }
 
+    fun exportNotes(notes: List<NoteItem>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+               var downloads = File("/storage/emulated/0/Download/")
 
+                if (!downloads.exists()) downloads = File("/storage/emulated/0/Downloads/")
+
+                val fos = FileOutputStream("${downloads.path}/euzhpad_notes.zip")
+                val zos = ZipOutputStream(fos)
+                notes.forEach {
+                    val zipEntry = ZipEntry("${it.title}.txt")
+                    zos.putNextEntry(zipEntry)
+                    zos.write(it.content.toByteArray())
+                    zos.closeEntry()
+                }
+                zos.close()
+                message.emit(getApplication<Application>().getString(R.string.success_export_message,downloads.path))
+            } catch (e: Exception) {
+                message.emit(e.toString())
+            }
+        }
+    }
 }

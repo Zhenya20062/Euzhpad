@@ -8,19 +8,23 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.RadioButton
 import android.widget.RadioGroup
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.euzhene.euzhpad_debug.R
 import com.euzhene.euzhpad_debug.databinding.FragmentNoteListBinding
 import com.euzhene.euzhpad_debug.di.AppComponent
-import com.euzhene.euzhpad_debug.presentation.NoteApp
 import com.euzhene.euzhpad_debug.domain.entity.Filter
 import com.euzhene.euzhpad_debug.domain.entity.NoteItem
+import com.euzhene.euzhpad_debug.presentation.NoteApp
 import com.euzhene.euzhpad_debug.presentation.note_item.NoteItemFragment
 import com.euzhene.euzhpad_debug.presentation.preferences.PreferencesFragment
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class NoteListFragment : Fragment() {
@@ -60,6 +64,14 @@ class NoteListFragment : Fragment() {
         viewModel.noteList.observe(viewLifecycleOwner) {
             noteListAdapter.submitList(it)
         }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.message.collect {
+                if (it == null) return@collect;
+                Toast.makeText(context,it,Toast.LENGTH_LONG).show()
+            }
+        }
+
     }
 
     private fun setupRecyclerView() {
@@ -95,6 +107,7 @@ class NoteListFragment : Fragment() {
                 getString(R.string.settings_export) -> {
                     //todo
                 }
+
                 getString(R.string.settings_lock) -> changePassword(noteItem)
             }
         }
@@ -161,7 +174,7 @@ class NoteListFragment : Fragment() {
                 R.string.settings_share -> share(noteItem)
             }
         } else {
-            val alertDialog = createPasswordAlertDialog(noteItem.password.isNullOrEmpty())
+            val alertDialog = createPasswordAlertDialog(noteItem.password.isEmpty())
                 .apply { show() }
 
             val et: EditText = alertDialog.findViewById(R.id.et_password)
@@ -204,24 +217,47 @@ class NoteListFragment : Fragment() {
         when (item.title) {
             getString(R.string.new_note) -> openNewNoteMode()
             getString(R.string.filter) -> sort()
-            getString(R.string.preferences) -> {
-                requireActivity().supportFragmentManager.beginTransaction()
-                    .addToBackStack(null)
-                    .replace(R.id.main_container, PreferencesFragment.newIntent())
-                    .setTransition(TRANSIT_FRAGMENT_OPEN)
-                    .commit()
-
-            }
-            getString(R.string.donate) -> {
-                //todo
-
-            }
-            getString(R.string.about) -> {
-                //todo
-
-            }
+            getString(R.string.preferences) -> openPreferencesFragment()
+            getString(R.string.export_notes) -> exportNotes();
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun exportNotes() {
+        val notes = viewModel.noteList.value?.filter { it.password != null }?.toMutableList() ?: return
+        showPasswordAlertDialog(notes)
+    }
+
+    private fun showPasswordAlertDialog(notes: MutableList<NoteItem>) {
+        /*logic: if the password the user enters for a note is correct - go to another note until
+         all the notes with password are gone. After entering all needing passwords we can proceed and export them
+         */
+        if (notes.isEmpty()) {
+            viewModel.exportNotes(viewModel.noteList.value ?: listOf())
+            return
+        }
+        val note = notes.first()
+
+        val alertDialog = createExportAlertDialog().apply { show() }
+        val text = getString(R.string.enter_password_for, note.title)
+        alertDialog.findViewById<TextView>(R.id.tv_enter_password_for)!!.text = text
+        alertDialog.findViewById<Button>(R.id.btn_next)!!.setOnClickListener {
+
+            val editText = alertDialog.findViewById<EditText>(R.id.et_password)!!
+            if (editText.text.toString() == note.password) {
+                alertDialog.dismiss()
+                showPasswordAlertDialog(notes.apply { removeAt(0)})
+            }
+            else editText.error = getString(R.string.incorrect_password)
+        }
+    }
+
+    private fun openPreferencesFragment() {
+        requireActivity().supportFragmentManager.beginTransaction()
+            .addToBackStack(null)
+            .replace(R.id.main_container, PreferencesFragment.newIntent())
+            .setTransition(TRANSIT_FRAGMENT_OPEN)
+            .commit()
     }
 
     private fun sort() {
@@ -257,6 +293,15 @@ class NoteListFragment : Fragment() {
             .setView(R.layout.alert_dialog_sorting)
             .setCancelable(true)
             .create()
+    }
+
+    private fun createExportAlertDialog(): AlertDialog {
+        return AlertDialog.Builder(requireContext())
+            .setView(R.layout.alert_dialog_export_with_password)
+            .setCancelable(true)
+            .create()
+
+
     }
 
     override fun onDestroyView() {

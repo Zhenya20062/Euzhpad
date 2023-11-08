@@ -48,4 +48,8 @@
         <item>@string/settings_export</item>
         <item>@string/settings_unlock</item>
     </string-array>
+    <string name="export_notes">Экспорт записей</string>
+    <string name="enter_password_for">Введите название для \"%1$s\"</string>
+    <string name="next">Далее</string>
+    <string name="success_export_message">Все записи были успешно экспортированы в %1$s</string>
 </resources>

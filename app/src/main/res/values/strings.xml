@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name" translatable="false">Euzhpad Debug</string>
     <string name="preferences">Preferences</string>
+    <string name="export_notes">Export notes</string>
     <string name="new_note">new note</string>
     <string name="filter">filter</string>
     <string name="donate">Donate</string>
@@ -33,6 +34,9 @@
     <string name="save_note_message">Do you want to save this note?</string>
     <string name ="cancel">Cancel</string>
     <string name="okay">OK</string>
+    <string name="enter_password_for">Enter password for \"%1$s\"</string>
+    <string name="next">Next</string>
+    <string name="success_export_message">all notes have been successfully exported to %1$s</string>
 
     <string-array name="alert_dialog_menu_lock">
         <item>Edit</item>
