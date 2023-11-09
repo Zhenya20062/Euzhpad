@@ -170,25 +170,25 @@ class NoteListFragment : Fragment() {
 
     private fun showPasswordAlertDialog(notes: MutableList<NoteItem>) {
         /*logic: if the password the user enters for a note is correct - go to another note until
-         all the notes with password are gone. After entering all needing passwords we can proceed and export them
+         all the notes with password are gone. After entering all needing passwords we can proceed and export the notes
          */
         if (notes.isEmpty()) {
             viewModel.exportNotes(viewModel.noteList.value ?: listOf())
             return
         }
         val note = notes.first()
-
-        val alertDialog = createExportAlertDialog().apply { show() }
-        val text = getString(R.string.enter_password_for, note.title)
-        alertDialog.findViewById<TextView>(R.id.tv_enter_password_for)!!.text = text
-        alertDialog.findViewById<Button>(R.id.btn_next)!!.setOnClickListener {
-
-            val editText = alertDialog.findViewById<EditText>(R.id.et_password)!!
-            if (editText.text.toString() == note.password) {
-                alertDialog.dismiss()
-                showPasswordAlertDialog(notes.apply { removeAt(0) })
-            } else editText.error = getString(R.string.incorrect_password)
+        createExportAlertDialog(note) {
+            showPasswordAlertDialog(notes.apply { removeAt(0) })
         }
+    }
+
+    private fun createExportAlertDialog(note: NoteItem, onCorrectPassword: () -> Unit): AlertDialog {
+        return PasswordDialogStrategy.buildPasswordAlertDialog(
+            btnText = getString(R.string.next),
+            header = getString(R.string.enter_password_for, note.title),
+            activity = requireActivity(),
+            noteItem = note,
+            onCorrectPassword = { onCorrectPassword() })
     }
 
     private fun openPreferencesFragment() {
@@ -234,12 +234,6 @@ class NoteListFragment : Fragment() {
             .create()
     }
 
-    private fun createExportAlertDialog(): AlertDialog {
-        return AlertDialog.Builder(requireContext())
-            .setView(R.layout.alert_dialog_export_with_password)
-            .setCancelable(true)
-            .create()
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()
