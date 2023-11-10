@@ -16,6 +16,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
@@ -59,11 +61,13 @@ class NoteListViewModel(
     fun exportNotes(notes: List<NoteItem>) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-               var downloads = File("/storage/emulated/0/Download/")
+                var downloads = File("/storage/emulated/0/Download/")
 
                 if (!downloads.exists()) downloads = File("/storage/emulated/0/Downloads/")
-
-                val fos = FileOutputStream("${downloads.path}/euzhpad_notes.zip")
+                val locale = getApplication<Application>().resources.configuration.locales[0]
+                val dateString =
+                    SimpleDateFormat("dd_MM_y", locale).format(Date())
+                val fos = FileOutputStream("${downloads.path}/euzhpad_${notes.size}_notes_${dateString}.zip")
                 val zos = ZipOutputStream(fos)
                 notes.forEach {
                     val zipEntry = ZipEntry("${it.title}.txt")
@@ -72,7 +76,7 @@ class NoteListViewModel(
                     zos.closeEntry()
                 }
                 zos.close()
-                message.emit(getApplication<Application>().getString(R.string.success_export_message,downloads.path))
+                message.emit(getApplication<Application>().getString(R.string.success_export_message, downloads.path))
             } catch (e: Exception) {
                 message.emit(e.toString())
             }

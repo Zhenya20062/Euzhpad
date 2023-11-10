@@ -2,12 +2,14 @@ package com.euzhene.euzhpad_debug.presentation.note_list
 
 import android.content.DialogInterface
 import android.os.Bundle
-import android.view.*
-import android.widget.Button
-import android.widget.EditText
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.RadioGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -86,11 +88,7 @@ class NoteListFragment : Fragment() {
     }
 
     private fun createOptionsAlertDialog(noteItem: NoteItem): AlertDialog {
-        val options = if (noteItem.password.isNullOrEmpty()) {
-            R.array.alert_dialog_menu_lock
-        } else {
-            R.array.alert_dialog_menu_unlock
-        }
+        val options = if (!noteItem.hasPassword) R.array.alert_dialog_menu_lock else R.array.alert_dialog_menu_unlock
 
         return AlertDialog.Builder(requireContext())
             .setItems(options, createDialogListener(noteItem))
@@ -140,7 +138,7 @@ class NoteListFragment : Fragment() {
             passwordDialogStrategy.createDialog()
     }
 
-    private fun openNewNoteMode() {
+    private fun openNewNote() {
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.main_container, NoteItemFragment.newInstanceAddNote())
             .addToBackStack(null)
@@ -155,7 +153,7 @@ class NoteListFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.title) {
-            getString(R.string.new_note) -> openNewNoteMode()
+            getString(R.string.new_note) -> openNewNote()
             getString(R.string.filter) -> sort()
             getString(R.string.preferences) -> openPreferencesFragment()
             getString(R.string.export_notes) -> exportNotes()

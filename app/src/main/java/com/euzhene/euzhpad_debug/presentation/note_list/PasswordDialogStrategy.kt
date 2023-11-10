@@ -1,11 +1,7 @@
 package com.euzhene.euzhpad_debug.presentation.note_list
 
 import android.content.Intent
-import android.view.WindowManager
-import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
 import com.euzhene.euzhpad_debug.R
