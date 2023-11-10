@@ -62,13 +62,14 @@ class NoteListViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 var downloads = File("/storage/emulated/0/Download/")
-
                 if (!downloads.exists()) downloads = File("/storage/emulated/0/Downloads/")
+
                 val locale = getApplication<Application>().resources.configuration.locales[0]
-                val dateString =
-                    SimpleDateFormat("dd_MM_y", locale).format(Date())
+                val dateString = SimpleDateFormat("dd_MM_y", locale).format(Date())
+
                 val fos = FileOutputStream("${downloads.path}/euzhpad_${notes.size}_notes_${dateString}.zip")
                 val zos = ZipOutputStream(fos)
+
                 notes.forEach {
                     val zipEntry = ZipEntry("${it.title}.txt")
                     zos.putNextEntry(zipEntry)
@@ -76,6 +77,7 @@ class NoteListViewModel(
                     zos.closeEntry()
                 }
                 zos.close()
+
                 message.emit(getApplication<Application>().getString(R.string.success_export_message, downloads.path))
             } catch (e: Exception) {
                 message.emit(e.toString())
