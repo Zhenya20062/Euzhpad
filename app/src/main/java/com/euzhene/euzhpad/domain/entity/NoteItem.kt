@@ -8,6 +8,8 @@ data class NoteItem(
     val lastEditTime: String,
     val password: String? = null
 ) {
+    val hasPassword:Boolean
+        get()= !password.isNullOrEmpty()
     companion object {
         const val UNKNOWN_ID = 0
     }

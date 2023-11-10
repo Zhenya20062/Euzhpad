@@ -1,26 +1,31 @@
 package com.euzhene.euzhpad.presentation.note_list
 
 import android.content.DialogInterface
-import android.content.Intent
 import android.os.Bundle
-import android.view.*
-import android.widget.Button
-import android.widget.EditText
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.RadioGroup
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.euzhene.euzhpad.R
 import com.euzhene.euzhpad.databinding.FragmentNoteListBinding
 import com.euzhene.euzhpad.di.AppComponent
-import com.euzhene.euzhpad.presentation.NoteApp
 import com.euzhene.euzhpad.domain.entity.Filter
 import com.euzhene.euzhpad.domain.entity.NoteItem
+import com.euzhene.euzhpad.presentation.NoteApp
 import com.euzhene.euzhpad.presentation.note_item.NoteItemFragment
 import com.euzhene.euzhpad.presentation.preferences.PreferencesFragment
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class NoteListFragment : Fragment() {
@@ -40,6 +45,8 @@ class NoteListFragment : Fragment() {
     }
     private val noteListAdapter = NoteListAdapter()
 
+    private lateinit var passwordDialogStrategy: PasswordDialogStrategy
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -53,19 +60,27 @@ class NoteListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (requireActivity() as AppCompatActivity)
-            .setSupportActionBar(binding.include as androidx.appcompat.widget.Toolbar)
+        (requireActivity() as AppCompatActivity).setSupportActionBar(binding.include as androidx.appcompat.widget.Toolbar)
         setupRecyclerView()
 
         viewModel.noteList.observe(viewLifecycleOwner) {
             noteListAdapter.submitList(it)
         }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.message.collect {
+                if (it == null) return@collect
+                Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+            }
+        }
+
     }
 
     private fun setupRecyclerView() {
         binding.rvNoteList.adapter = noteListAdapter
         noteListAdapter.onItemClick = {
-            passPassword(it, R.string.settings_edit)
+            passwordDialogStrategy = EditNoteDialogStrategy(noteItem = it, activity = requireActivity())
+            checkPassword()
         }
         noteListAdapter.onItemLongClick = {
             createOptionsAlertDialog(it).show()
@@ -73,11 +88,7 @@ class NoteListFragment : Fragment() {
     }
 
     private fun createOptionsAlertDialog(noteItem: NoteItem): AlertDialog {
-        val options = if (noteItem.password.isNullOrEmpty()) {
-            R.array.alert_dialog_menu_lock
-        } else {
-            R.array.alert_dialog_menu_unlock
-        }
+        val options = if (!noteItem.hasPassword) R.array.alert_dialog_menu_lock else R.array.alert_dialog_menu_unlock
 
         return AlertDialog.Builder(requireContext())
             .setItems(options, createDialogListener(noteItem))
@@ -88,106 +99,46 @@ class NoteListFragment : Fragment() {
     private fun createDialogListener(noteItem: NoteItem): DialogInterface.OnClickListener {
 
         return DialogInterface.OnClickListener { _, which ->
-            when (resources.getStringArray(R.array.alert_dialog_menu_lock)[which]) {
-                getString(R.string.settings_edit) -> passPassword(noteItem, R.string.settings_edit)
-                getString(R.string.settings_delete) -> passPassword(noteItem, R.string.settings_delete)
-                getString(R.string.settings_share) -> passPassword(noteItem, R.string.settings_share)
-                getString(R.string.settings_export) -> {
-                    //todo
-                }
-                getString(R.string.settings_lock) -> changePassword(noteItem)
+            passwordDialogStrategy = when (resources.getStringArray(R.array.alert_dialog_menu_lock)[which]) {
+                getString(R.string.settings_edit) -> EditNoteDialogStrategy(noteItem = noteItem, activity = requireActivity())
+                getString(R.string.settings_delete) -> DeleteNoteDialogStrategy(
+                    noteItem = noteItem,
+                    activity = requireActivity(),
+                    viewModel = viewModel
+                )
+
+                getString(R.string.settings_share) -> ShareNoteDialogStrategy(
+                    noteItem = noteItem,
+                    activity = requireActivity(),
+                    viewModel = viewModel
+                )
+
+                getString(R.string.settings_export) -> ExportNoteDialogStrategy(
+                    noteItem = noteItem,
+                    activity = requireActivity(),
+                    viewModel = viewModel
+                )
+
+                getString(R.string.settings_lock) -> LockNoteDialogStrategy(
+                    noteItem = noteItem,
+                    activity = requireActivity(),
+                    viewModel = viewModel
+                )
+
+                else -> throw NotImplementedError()
             }
+            checkPassword()
         }
     }
 
-    private fun createPasswordAlertDialog(password: Boolean): AlertDialog {
-        val v: Int = if (password) {
-            R.layout.alert_dialog_lock_with_password
-        } else {
-            R.layout.alert_dialog_unlock_by_password
-        }
-        return AlertDialog.Builder(requireContext())
-            .setView(v)
-            .setCancelable(true)
-            .create()
+    private fun checkPassword() {
+        if (!passwordDialogStrategy.noteItem.hasPassword)
+            passwordDialogStrategy.doAction()
+        else
+            passwordDialogStrategy.createDialog()
     }
 
-    private fun changePassword(noteItem: NoteItem) {
-        val alertDialog = createPasswordAlertDialog(noteItem.password.isNullOrEmpty())
-            .apply { show() }
-
-        val et = alertDialog.findViewById<EditText>(R.id.et_password)
-        val btn = alertDialog.findViewById<Button>(R.id.btn_lock)
-            ?: alertDialog.findViewById<Button>(R.id.btn_unlock)
-
-        btn?.setOnClickListener {
-            val password = et?.text.toString()
-            if (noteItem.password.isNullOrEmpty()) {
-                viewModel.editNoteItem(noteItem, password)
-            } else {
-                if (noteItem.password == password) {
-                    viewModel.editNoteItem(noteItem, null)
-                }
-            }
-            alertDialog.dismiss()
-        }
-    }
-
-    private fun share(noteItem: NoteItem) {
-        val shareIntent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(
-                Intent.EXTRA_TEXT,
-                viewModel.concatenateTitleAndContent(noteItem.title, noteItem.content)
-            )
-            type = TEXT_PLAIN_TYPE
-        }
-        startActivity(shareIntent)
-    }
-
-    private fun openEditMode(noteItem: NoteItem) {
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.main_container, NoteItemFragment.newInstanceEditNote(noteItem.id))
-            .addToBackStack(null)
-            .setTransition(TRANSIT_FRAGMENT_OPEN)
-            .commit()
-    }
-
-    private fun passPassword(noteItem: NoteItem, stringId: Int) {
-        if (noteItem.password.isNullOrEmpty()) {
-            when (stringId) {
-                R.string.settings_edit -> openEditMode(noteItem)
-                R.string.settings_delete -> viewModel.deleteNoteItem(noteItem)
-                R.string.settings_share -> share(noteItem)
-            }
-        } else {
-            val alertDialog = createPasswordAlertDialog(noteItem.password.isNullOrEmpty())
-                .apply { show() }
-
-            val et: EditText = alertDialog.findViewById(R.id.et_password)
-                ?: throw java.lang.RuntimeException("Couldn't find the right edit text")
-            val btn: Button = alertDialog.findViewById(R.id.btn_lock)
-                ?: alertDialog.findViewById(R.id.btn_unlock)
-                ?: throw java.lang.RuntimeException("Couldn't find the right button")
-
-            btn.setOnClickListener {
-                val password = et.text.toString()
-
-                if (noteItem.password == password) {
-                    when (stringId) {
-                        R.string.settings_edit -> openEditMode(noteItem)
-                        R.string.settings_delete -> viewModel.deleteNoteItem(noteItem)
-                        R.string.settings_share -> share(noteItem)
-                    }
-                    alertDialog.dismiss()
-                } else {
-                    et.error = getString(R.string.incorrect_password)
-                }
-            }
-        }
-    }
-
-    private fun openNewNoteMode() {
+    private fun openNewNote() {
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.main_container, NoteItemFragment.newInstanceAddNote())
             .addToBackStack(null)
@@ -202,26 +153,49 @@ class NoteListFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.title) {
-            getString(R.string.new_note) -> openNewNoteMode()
+            getString(R.string.new_note) -> openNewNote()
             getString(R.string.filter) -> sort()
-            getString(R.string.preferences) -> {
-                requireActivity().supportFragmentManager.beginTransaction()
-                    .addToBackStack(null)
-                    .replace(R.id.main_container, PreferencesFragment.newIntent())
-                    .setTransition(TRANSIT_FRAGMENT_OPEN)
-                    .commit()
-
-            }
-            getString(R.string.donate) -> {
-                //todo
-
-            }
-            getString(R.string.about) -> {
-                //todo
-
-            }
+            getString(R.string.preferences) -> openPreferencesFragment()
+            getString(R.string.export_notes) -> exportNotes()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun exportNotes() {
+        val notes = viewModel.noteList.value?.filter { it.password != null }?.toMutableList() ?: return
+        showPasswordAlertDialog(notes)
+    }
+
+    private fun showPasswordAlertDialog(notes: MutableList<NoteItem>) {
+        /*logic: if the password the user enters for a note is correct - go to another note until
+         all the notes with password are gone. After entering all needing passwords we can proceed and export the notes
+         */
+        if (notes.isEmpty()) {
+            viewModel.exportNotes(viewModel.noteList.value ?: listOf())
+            return
+        }
+        val note = notes.first()
+        val passwordDialog = createExportAlertDialog(note)
+        passwordDialog.onCorrectPassword = {
+            showPasswordAlertDialog(notes.apply { removeAt(0) })
+        }
+    }
+
+    private fun createExportAlertDialog(note: NoteItem): PasswordDialog {
+        return PasswordDialog(
+            btnText = getString(R.string.next),
+            header = getString(R.string.enter_password_for, note.title),
+            activity = requireActivity(),
+            noteItem = note
+        )
+    }
+
+    private fun openPreferencesFragment() {
+        requireActivity().supportFragmentManager.beginTransaction()
+            .addToBackStack(null)
+            .replace(R.id.main_container, PreferencesFragment.newIntent())
+            .setTransition(TRANSIT_FRAGMENT_OPEN)
+            .commit()
     }
 
     private fun sort() {
@@ -259,13 +233,10 @@ class NoteListFragment : Fragment() {
             .create()
     }
 
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    companion object {
-        private const val TEXT_PLAIN_TYPE = "text/plain"
     }
 
 }
