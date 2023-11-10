@@ -177,18 +177,19 @@ class NoteListFragment : Fragment() {
             return
         }
         val note = notes.first()
-        createExportAlertDialog(note) {
+        val passwordDialog = createExportAlertDialog(note)
+        passwordDialog.onCorrectPassword = {
             showPasswordAlertDialog(notes.apply { removeAt(0) })
         }
     }
 
-    private fun createExportAlertDialog(note: NoteItem, onCorrectPassword: () -> Unit): AlertDialog {
-        return PasswordDialogStrategy.buildPasswordAlertDialog(
+    private fun createExportAlertDialog(note: NoteItem): PasswordDialog {
+        return PasswordDialog(
             btnText = getString(R.string.next),
             header = getString(R.string.enter_password_for, note.title),
             activity = requireActivity(),
-            noteItem = note,
-            onCorrectPassword = { onCorrectPassword() })
+            noteItem = note
+        )
     }
 
     private fun openPreferencesFragment() {

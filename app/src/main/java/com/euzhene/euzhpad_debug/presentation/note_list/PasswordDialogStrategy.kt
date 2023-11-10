@@ -1,6 +1,7 @@
 package com.euzhene.euzhpad_debug.presentation.note_list
 
 import android.content.Intent
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -18,60 +19,14 @@ abstract class PasswordDialogStrategy(
 
     abstract fun doAction()
 
-    open fun createDialog(): AlertDialog = createDefaultPasswordAlertDialog()
-
-    protected fun createDefaultPasswordAlertDialog(
-        btnText: String? = null,
-        header: String? = null,
-        onClick: ((AlertDialog) -> Unit)? = null
-    ): AlertDialog {
-        val _btnText = btnText ?: activity.getString(if (noteItem.hasPassword) R.string.unlock else R.string.lock)
-        val _header = header ?: activity.getString(if (noteItem.hasPassword) R.string.settings_unlock else R.string.settings_lock)
-
-        return buildPasswordAlertDialog(
-            btnText = _btnText,
-            header = _header,
-            activity = activity,
-            noteItem = noteItem,
-            onCorrectPassword = { doAction() },
-            onClick = onClick
-        )
-    }
-
-    companion object {
-        fun buildPasswordAlertDialog(
-            btnText: String,
-            header: String,
-            activity: FragmentActivity,
-            noteItem: NoteItem,
-            onCorrectPassword: ((AlertDialog) -> Unit)? = null,
-            onClick: ((AlertDialog) -> Unit)? = null
-        ): AlertDialog {
-            val alertDialog = AlertDialog.Builder(activity)
-                .setView(R.layout.dialog_password)
-                .setCancelable(true)
-                .create()
-            alertDialog.show()
-            alertDialog.findViewById<Button>(R.id.btn_dialog_password)!!.apply {
-                text = btnText
-                setOnClickListener {
-                    if (onClick != null) {
-                        onClick(alertDialog)
-                        return@setOnClickListener
-                    }
-                    val et = alertDialog.findViewById<EditText>(R.id.et_dialog_password)!!
-                    val password = et.text.toString()
-                    if (noteItem.password == password) {
-                        if (onCorrectPassword != null) onCorrectPassword(alertDialog)
-                        alertDialog.dismiss()
-                    } else et.error = context.getString(R.string.incorrect_password)
-                }
-
-            }
-            alertDialog.findViewById<TextView>(R.id.tv_dialog_password)!!.text = header
-            return alertDialog
+    open fun createDialog(): PasswordDialog {
+        return createDefaultPasswordAlertDialog().apply {
+            onCorrectPassword = { doAction() }
         }
     }
+
+    protected fun createDefaultPasswordAlertDialog(): PasswordDialog = PasswordDialog(activity = activity, noteItem = noteItem)
+
 }
 
 class EditNoteDialogStrategy(noteItem: NoteItem, activity: FragmentActivity) :
@@ -121,18 +76,20 @@ class LockNoteDialogStrategy(noteItem: NoteItem, activity: FragmentActivity, pri
         createDialog()
     }
 
-    override fun createDialog(): AlertDialog {
-        return createDefaultPasswordAlertDialog {
-            val et = it.findViewById<EditText>(R.id.et_dialog_password)!!
+    override fun createDialog(): PasswordDialog {
+        val passwordDialog = createDefaultPasswordAlertDialog()
+        passwordDialog.onClick = {
+            val et = passwordDialog.findViewById<EditText>(R.id.et_dialog_password)!!
             val password = et.text.toString()
 
             if (!noteItem.hasPassword) {
                 viewModel.editNoteItem(noteItem, password)
-                it.dismiss()
+                passwordDialog.dismiss()
             } else if (noteItem.password == password) {
                 viewModel.editNoteItem(noteItem, null)
-                it.dismiss()
+                passwordDialog.dismiss()
             } else et.error = activity.getString(R.string.incorrect_password)
         }
+        return passwordDialog
     }
 }
