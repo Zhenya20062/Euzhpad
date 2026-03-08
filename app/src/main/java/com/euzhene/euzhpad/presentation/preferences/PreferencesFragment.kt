@@ -9,6 +9,7 @@ import com.euzhene.euzhpad.R
 import com.euzhene.euzhpad.di.AppComponent
 import com.euzhene.euzhpad.presentation.NoteApp
 import javax.inject.Inject
+import androidx.core.content.edit
 
 class PreferencesFragment : PreferenceFragmentCompat() {
     private val component: AppComponent by lazy {
@@ -19,7 +20,7 @@ class PreferencesFragment : PreferenceFragmentCompat() {
     lateinit var sharedPreference: SharedPreferences
 
     private val cbPref: CheckBoxPreference by lazy {
-        preferenceManager.findPreference<CheckBoxPreference>("dark theme")
+        preferenceManager.findPreference("dark theme")
             ?: throw RuntimeException("Unable to find this check box")
     }
 
@@ -43,7 +44,7 @@ class PreferencesFragment : PreferenceFragmentCompat() {
                 AppCompatDelegate.MODE_NIGHT_YES
             }
             AppCompatDelegate.setDefaultNightMode(themeId)
-            sharedPreference.edit().putInt(KEY_THEME, themeId).apply()
+            sharedPreference.edit { putInt(KEY_THEME, themeId) }
 
             true
         }

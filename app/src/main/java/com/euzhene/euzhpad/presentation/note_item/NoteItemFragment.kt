@@ -13,7 +13,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.appcompat.widget.Toolbar
+import androidx.core.view.MenuProvider
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -24,7 +24,7 @@ import com.euzhene.euzhpad.presentation.NoteApp
 import com.euzhene.euzhpad.domain.entity.NoteItem
 import javax.inject.Inject
 
-class NoteItemFragment : Fragment() {
+class NoteItemFragment : Fragment(), MenuProvider {
     private var _binding: FragmentNoteEditBinding? = null
     private val binding: FragmentNoteEditBinding
         get() = _binding ?: throw RuntimeException("FragmentNoteEditBinding = null")
@@ -52,13 +52,13 @@ class NoteItemFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        setHasOptionsMenu(true)
         _binding = FragmentNoteEditBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
+
         (requireActivity() as AppCompatActivity).setSupportActionBar(
             binding.iEditNoteToolbar.editNoteToolbar
         )
@@ -160,29 +160,6 @@ class NoteItemFragment : Fragment() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        requireActivity().menuInflater.inflate(R.menu.edit_note_menu, menu)
-        val searchView = (menu.findItem(R.id.note_edit_search).actionView as SearchView)
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                if (query != null) viewModel.updateSearchText(binding.etContent.text.toString(), query)
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                return false
-            }
-
-        })
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.title) {
-            getString(R.string.save) -> save()
-            getString(R.string.share) -> share()
-        }
-        return super.onOptionsItemSelected(item)
-    }
 
     private fun share() {
         val title = binding.etTitle.text.toString()
@@ -227,6 +204,31 @@ class NoteItemFragment : Fragment() {
         spannable.setSpan(BackgroundColorSpan(resources.getColor(R.color.purple_200, requireContext().theme)), start, end, Spannable
             .SPAN_EXCLUSIVE_EXCLUSIVE)
         binding.etContent.setText(spannable)
+    }
+
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.edit_note_menu, menu)
+        val searchView = (menu.findItem(R.id.note_edit_search).actionView as SearchView)
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                if (query != null) viewModel.updateSearchText(binding.etContent.text.toString(), query)
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return false
+            }
+
+        })
+
+    }
+
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
+        when (item.title) {
+            getString(R.string.save) -> save()
+            getString(R.string.share) -> share()
+        }
+        return true
     }
 
     companion object {
