@@ -60,7 +60,7 @@ class NoteItemFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (requireActivity() as AppCompatActivity).setSupportActionBar(
-            binding.editNoteToolbar as Toolbar
+            binding.iEditNoteToolbar.editNoteToolbar
         )
         if (savedInstanceState == null) {
             when (screenMode) {
